@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  div.container#top(style='margin-top:60px')
+  div.container#content
+    div.row
+      div.col-md-10
+        if messageTitle
+          p
+            em= messageTitle
+
+        if message
+          h1= message
+        if messageDetails
+          p= messageDetails
+        if messageTiny
+          p
+            small= messageTiny
+        if messageOutput
+          p
+            pre= messageOutput
+
+        p
+          br
+          a.btn.btn-default(href=buttonLink || '/')= buttonText || 'Home'

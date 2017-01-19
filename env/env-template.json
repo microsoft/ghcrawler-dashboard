@@ -1,0 +1,25 @@
+{
+  "localhost-config": {
+    "properties": {
+      "CONFIGURATION_ENVIRONMENT": "localhost",
+      "DEBUG_ALLOW_HTTP" : true,
+      "CRAWLER_INSIGHTS_KEY": "",
+      "CRAWLER_NAME": "",
+      "CRAWLER_QUEUE_PREFIX": "",
+      "CRAWLER_REDIS_ACCESS_KEY": "",
+      "CRAWLER_REDIS_PREFIX": "local:crawldash",
+      "CRAWLER_REDIS_URL": "",
+      "CRAWLER_SERVICEBUS_CONNECTION_STRING": "",
+      "CRAWLER_AMQP10_URL": "",
+      "AAD_CLIENT_SECRET": "",
+      "AAD_CLIENT_ID": "",
+      "AAD_TENANT_ID": "",
+      "AAD_REDIRECT_URL": "",
+      "AAD_ISSUER": "",
+      "SESSION_SALT": "",
+      "SESSION_ENCRYPTION": "encrypt",
+      "SESSION_ENCRYPTION_KEY_ID": "",
+      "SESSION_COOKIE_DOMAIN": ""
+    }
+  }
+}

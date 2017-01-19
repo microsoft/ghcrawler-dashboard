@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crawler Dashboard</title>
+    <link href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container text-center">
+      <h1>Crawler Dashboard</h1>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Queued active messages</h4>
+            </div>
+            <div class="panel-body">
+              <div id="queuedMessagesChart"></div>
+            </div>
+            <div class="row text-center">
+              <div class="btn-group text-center" role="group">
+                <button id="queuedMsgs1MinBtn" type="button" class="btn btn-sm btn-primary">1 min</button>
+                <button id="queuedMsgs10MinBtn" type="button" class="btn btn-sm btn-primary active">10 min</button>
+                <button id="queuedMsgs60MinBtn" type="button" class="btn btn-sm btn-primary">1 hour</button>
+              </div>
+            </div>
+            <br>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Message rates</h4>
+            </div>
+            <div class="panel-body">
+              <div id="messageRatesChart"></div>
+            </div>
+            <div class="row text-center">
+              <div class="btn-group text-center" role="group">
+                <button id="messageRates1MinBtn" type="button" class="btn btn-sm btn-primary active">1 min</button>
+                <button id="messageRates10MinBtn" type="button" class="btn btn-sm btn-primary">10 min</button>
+                <button id="messageRates60MinBtn" type="button" class="btn btn-sm btn-primary">1 hour</button>
+              </div>
+            </div>
+            <br>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Queue request</h4>
+            </div>
+            <div class="panel-body">
+              <div id="queueRequestsAlert" class="alert" role="alert" style="display: none;"></div>
+              <textarea id="requests" rows="6" cols="72"></textarea>
+              <p>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <button id="queueRequestsBtn" class="btn btn-primary">Queue</button>
+                  </div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Recreate queue</h4>
+            </div>
+            <div class="panel-body">
+              <div id="queueAlert" class="alert" role="alert" style="display: none;"></div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <span class="input-group-addon">Queue</span>
+                    <input id="recreateQueueName" type="text" class="form-control" size="10" value="deadletter"></input>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" data-toggle="modal" data-target="#queueModal" class="btn btn-sm btn-warning pull-right">Recreate</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Get or delete requests</h4>
+            </div>
+            <div class="panel-body">
+              <div id="getRequestsAlert" class="alert" role="alert" style="display: none;"></div>
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="input-group">
+                    <span class="input-group-addon">Queue</span>
+                    <input id="getQueueName" type="text" class="form-control" size="10" value="deadletter"></input>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <span class="input-group-addon">Count</span>
+                    <input id="getCount" type="number" class="form-control" min="1" max="100" value="1"></input>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="btn-group pull-right" role="group">
+                    <button id="getRequestsBtn" type="button" class="btn btn-sm btn-primary">Get</button>
+                    <button type="button" data-toggle="modal" data-target="#requestsModal" class="btn btn-sm btn-warning">Del</button>
+                  </div>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-md-12">
+                  <pre id="requestList"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Update configuration</h4>
+            </div>
+            <div class="panel-body">
+              <div id="updateConfigsAlert" class="alert" role="alert" style="display: none;"></div>
+              <textarea id="updateConfigs" rows="6" cols="72"></textarea>
+              <p>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <button id="updateConfigsBtn" class="btn btn-primary">Update</button>
+                  </div>
+                  <div class="col-sm-6">
+                    <button id="stopBtn" class="btn btn-warning pull-right">Stop Crawler</button>
+                  </div>
+                </div>
+              </p>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6"><h4 class="text-center">Current configuration</h4></div>
+                <div class="col-md-3"><button id="refreshConfigsBtn" class="btn btn-primary pull-right">Refresh</button></div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="currentConfigsAlert" class="alert" role="alert" style="display: none;"></div>
+              <pre id="currentConfigs"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="requestsModal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h3 class="modal-title">Delete requests?</h3>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="deleteRequestsBtn" type="button" class="btn btn-primary">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="queueModal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h3 class="modal-title">Recreate queue</h3>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="recreateQueueBtn" type="button" class="btn btn-primary">Recreate</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+    <script src="js/app/dashboard.js"></script>
+  </body>
+</html>

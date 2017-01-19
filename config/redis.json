@@ -1,0 +1,8 @@
+{
+  "port": "env://CRAWLER_REDIS_PORT",
+  "host": "env://CRAWLER_REDIS_URL",
+  "key": "env://CRAWLER_REDIS_ACCESS_KEY",
+  "ttl": "env://CRAWLER_REDIS_TTL?type=integer&default=604800",
+  "prefix": "env://CRAWLER_REDIS_PREFIX",
+  "tls": "env://CRAWLER_REDIS_URL"
+}

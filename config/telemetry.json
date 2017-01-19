@@ -1,0 +1,3 @@
+{
+  "applicationInsightsKey": "env://CRAWLER_INSIGHTS_KEY"
+}
