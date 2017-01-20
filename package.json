@@ -7,7 +7,15 @@
     "start": "node ./bin/www",
     "test": "node_modules/grunt/bin/grunt"
   },
+  "keywords": [
+    "crawler",
+    "dashboard"
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microsoft/crawler-dashboard.git"
+  },
   "dependencies": {
     "adal-node": "^0.1.22",
     "amqp10": "^3.4.0",
