@@ -6,8 +6,17 @@ const moment = require('moment');
 const RedisMetrics = require('redis-metrics');
 
 class RedisMetricsClient {
-  constructor(redisClient) {
-    this.redisMetrics = new RedisMetrics({ client: redisClient });
+  constructor(config) {
+    const port = config.redis.port || config.redis.tls ? 6380 : 6379;
+    let redisOptions = {
+      auth_pass: config.redis.key,
+    };
+    if (config.redis.tls) {
+      redisOptions.tls = {
+        servername: config.redis.tls,
+      };
+    }
+    this.redisMetrics = new RedisMetrics({ port: port, host: config.redis.host || config.redis.tls, redisOptions });
   }
 
   getMetric(name, displayedMetricName, startTime, endTime) {
