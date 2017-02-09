@@ -57,15 +57,17 @@ module.exports = function init(app, express, rootdir, config, configurationError
   }
   let redisFirstCallback;
   let redisOptions = {
-    auth_pass: config.redis.key,
   };
+  if (config.redis.key) {
+    redisOptions.auth_pass = config.redis.key;
+  }
   if (config.redis.tls) {
     redisOptions.tls = {
-      servername: config.redis.tls,
+      servername: config.redis.servername,
     };
   }
   debug(`connecting to Redis ${config.redis.host}`);
-  const port = config.redis.port || config.redis.tls ? 6380 : 6379;
+  const port = config.redis.port || (config.redis.tls ? 6380 : 6379);
   redisClient = redis.createClient(port, config.redis.host || config.redis.tls, redisOptions);
   const redisHelper = new RedisHelper(redisClient, config.redis.prefix);
   app.set('redisHelper', redisHelper);
@@ -78,13 +80,21 @@ module.exports = function init(app, express, rootdir, config, configurationError
       cb();
     }
   });
-  redisClient.on('error', error => providers.insights.trackException(error, { name: 'CrawlerDashboardRedisError' }));
-  redisClient.on('reconnecting', properties => providers.insights.trackEvent('CrawlerDashboardRedisReconnecting', properties));
-  redisClient.on('end', () => providers.insights.trackEvent('CrawlerDashboardRedisEnd'));
+  redisClient.on('error', error => {
+    providers.insights.trackException(error, { name: 'CrawlerDashboardRedisError' });
+  });
+  redisClient.on('reconnecting', properties => {
+    providers.insights.trackEvent('CrawlerDashboardRedisReconnecting', properties);
+  });
+  redisClient.on('end', () => {
+    providers.insights.trackEvent('CrawlerDashboardRedisEnd');
+  });
   async.parallel([
     cb => {
       redisFirstCallback = cb;
-      redisClient.auth(config.redis.key);
+      if (config.redis.key) {
+        redisClient.auth(config.redis.key);
+      }
       debug('authenticated to Redis');
     }
   ], error => {
