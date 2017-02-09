@@ -7,7 +7,7 @@ EXPOSE 5858
 # when we change our application's nodejs dependencies:
 RUN npm install -g nodemon
 ADD package.json /tmp/package.json
-RUN cd /tmp && npm install
+RUN cd /tmp && npm install --production
 RUN mkdir -p /opt/crawler-dashboard && cp -a /tmp/node_modules /opt/crawler-dashboard/
 
 WORKDIR /opt/crawler-dashboard
