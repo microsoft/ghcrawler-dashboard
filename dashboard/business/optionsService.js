@@ -19,12 +19,7 @@ class OptionsService {
   }
 
   static initializeSubsystemOptions(config, name, defaults) {
-    if (Object.getOwnPropertyNames(config).length > 1) {
-      return Q(config);
-    }
-    return Q.all(Object.getOwnPropertyNames(defaults).map(optionName => {
-      return config._config.set(optionName, defaults[optionName]);
-    })).then(() => { return config._config.getAll(); });
+    return Q(config);
   }
 
   static createRedisOptions(defaults, crawlerName, redisClient) {
@@ -71,7 +66,7 @@ class OptionsService {
   getAll() {
     return Q.all(Object.getOwnPropertyNames(this.options).map(key => {
       return this.options[key]._config.getAll();
-    })).then(() => { return this.options;});
+    })).then(() => { return this.options; });
   }
 
   _collectPatches(patches) {
