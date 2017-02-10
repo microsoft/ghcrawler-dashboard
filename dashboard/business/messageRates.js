@@ -11,13 +11,13 @@ class MessageRates {
   constructor() {
   }
 
-  initialize(config, redisClient) {
+  initialize(config) {
     const serviceBusConfig = config.dashboard.serviceBus;
     this.queueNames = serviceBusConfig.messageRatesQueueNames;
     this.operations = serviceBusConfig.metricsOperationNames;
     this.queueNamePrefix = serviceBusConfig.queueNamePrefix;
     this.crawlerName = config.crawlerDefaults.crawler.name;
-    this.metricsClient = new RedisMetricsClient(redisClient);
+    this.metricsClient = new RedisMetricsClient(config);
   }
 
   getMessageRatesData(sec = maxSec) {

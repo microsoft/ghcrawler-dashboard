@@ -41,7 +41,7 @@ router.init = (app, callback) => {
   serviceBusClient.initialize(config, providers.serviceBusClient);
   serviceBusStatsPoller.initialize(config, providers.serviceBusClient);
   serviceBusStatsPoller.startCollectingData();
-  messageRates.initialize(config, providers.redisClient);
+  messageRates.initialize(config);
   configService.initialize(options).then(callback, callback);
 };
 
