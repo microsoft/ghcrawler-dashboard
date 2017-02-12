@@ -7,7 +7,7 @@ const RedisMetrics = require('redis-metrics');
 
 class RedisMetricsClient {
   constructor(config) {
-    const port = config.redis.port || config.redis.tls ? 6380 : 6379;
+    const port = config.redis.port || (config.redis.tls ? 6380 : 6379);
     let redisOptions = {
       auth_pass: config.redis.key,
     };
