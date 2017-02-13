@@ -16,7 +16,7 @@ class MessageRates {
     this.queueNames = serviceBusConfig.messageRatesQueueNames;
     this.operations = serviceBusConfig.metricsOperationNames;
     this.queueNamePrefix = serviceBusConfig.queueNamePrefix;
-    this.crawlerName = config.crawlerDefaults.crawler.name;
+    this.crawlerName = config.dashboard.crawler.name;
     this.metricsClient = new RedisMetricsClient(config);
   }
 

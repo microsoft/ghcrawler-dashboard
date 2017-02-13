@@ -11,6 +11,10 @@ module.exports = function (configApi) {
     amqp: {
       connectionString: environmentProvider.get('CRAWLER_AMQP10_URL'),
     },
+    crawler: {
+      name: environmentProvider.get('CRAWLER_NAME') || 'crawler',
+      subsystems: ['crawler', 'fetcher', 'queuing', 'storage', 'locker']
+    },
     serviceBus: {
       connectionString: environmentProvider.get('CRAWLER_SERVICEBUS_CONNECTION_STRING'),
       queueNamePrefix: environmentProvider.get('CRAWLER_QUEUE_PREFIX') || '',
