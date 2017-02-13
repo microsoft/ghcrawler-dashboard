@@ -32,11 +32,11 @@ router.init = (app, callback) => {
   config = app.get('runtimeConfig');
   const providers = app.get('providers');
   let options = null;
-  if (config.dashboard && config.dashboard.configProvider && config.dashboard.configProvider.toLowerCase() === 'inmemory') {
-    options = OptionsService.createInMemoryOptions(config.crawlerDefaults);
+  if (config.dashboard && config.dashboard.configProvider && config.dashboard.configProvider.toLowerCase() === 'memory') {
+    options = OptionsService.createInMemoryOptions(config.dashboard.crawler.subsystems);
   } else {
-    const crawlerName = config.crawlerDefaults.crawler.name;
-    options = OptionsService.createRedisOptions(config.crawlerDefaults, crawlerName, providers.redisClient);
+    const crawlerName = config.dashboard.crawler.name;
+    options = OptionsService.createRedisOptions(config.dashboard.crawler.subsystems, crawlerName, providers.redisClient);
   }
   serviceBusClient.initialize(config, providers.serviceBusClient);
   serviceBusStatsPoller.initialize(config, providers.serviceBusClient);

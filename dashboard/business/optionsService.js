@@ -9,39 +9,35 @@ class OptionsService {
   constructor() {
   }
 
-  static setupOptions(configs, defaults) {
+  static setupOptions(configs) {
+    // resolve all the subsystem configs into their values
     return Q.all(Object.getOwnPropertyNames(configs).map(subsystemName => {
       return configs[subsystemName].getAll().then(subsystemConfig => {
-        return OptionsService.initializeSubsystemOptions(subsystemConfig, subsystemName, defaults[subsystemName]).then(subsystemOptions =>
-          configs[subsystemName] = subsystemOptions);
+        configs[subsystemName] = subsystemConfig;
       });
     })).then(() => { return configs; });
   }
 
-  static initializeSubsystemOptions(config, name, defaults) {
-    return Q(config);
-  }
-
-  static createRedisOptions(defaults, crawlerName, redisClient) {
+  static createRedisOptions(subsystems, crawlerName, redisClient) {
     const result = {};
-    Object.getOwnPropertyNames(defaults).forEach(subsystemName => {
+    subsystems.forEach(subsystemName => {
       const key = `${crawlerName}:options:${subsystemName}`;
       const channel = `${key}-channel`;
       const configStore = new RefreshingConfigRedis.RedisConfigStore(redisClient, key);
       result[subsystemName] = new RefreshingConfig.RefreshingConfig(configStore)
         .withExtension(new RefreshingConfigRedis.RedisPubSubRefreshPolicyAndChangePublisher(redisClient, channel));
     });
-    return OptionsService.setupOptions(result, defaults);
+    return OptionsService.setupOptions(result);
   }
 
-  static createInMemoryOptions(defaults) {
+  static createInMemoryOptions(subsystems) {
     const result = {};
-    Object.getOwnPropertyNames(defaults).forEach(subsystemName => {
+    subsystems.forEach(subsystemName => {
       const configStore = new RefreshingConfig.InMemoryConfigStore();
       result[subsystemName] = new RefreshingConfig.RefreshingConfig(configStore)
         .withExtension(new RefreshingConfig.InMemoryPubSubRefreshPolicyAndChangePublisher());
     });
-    return OptionsService.setupOptions(result, defaults);
+    return OptionsService.setupOptions(result);
   }
 
   initialize(options) {
