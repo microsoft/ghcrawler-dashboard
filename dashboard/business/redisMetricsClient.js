@@ -13,7 +13,7 @@ class RedisMetricsClient {
     };
     if (config.redis.tls) {
       redisOptions.tls = {
-        servername: config.redis.tls,
+        servername: config.redis.host,
       };
     }
     this.redisMetrics = new RedisMetrics({ port: port, host: config.redis.host || config.redis.tls, redisOptions });
