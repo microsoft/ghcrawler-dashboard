@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-'use strict';
-
 const utils = require('../utils');
 
 module.exports = function (configApi) {
@@ -13,9 +11,7 @@ module.exports = function (configApi) {
       url: environmentProvider.get('CRAWLER_SERVICE_URL') || 'http://localhost:3000',
       apiToken: environmentProvider.get('CRAWLER_SERVICE_AUTH_TOKEN') || 'secret'
     },
-    serviceBus: {
-      connectionString: environmentProvider.get('CRAWLER_SERVICEBUS_CONNECTION_STRING'),
-      queueNamePrefix: environmentProvider.get('CRAWLER_QUEUE_PREFIX') || '',
+    queuing: {
       queueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_QUEUE_NAMES') || ['deadletter', 'immediate', 'later', 'normal', 'soon']),
       messageRatesQueueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_MESSAGE_RATES_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
       metricsOperationNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_METRICS_OPERATION_NAMES') || ['push', 'repush', 'done', 'abandon']),

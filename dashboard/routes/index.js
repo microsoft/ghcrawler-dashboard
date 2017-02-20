@@ -6,13 +6,13 @@ const express = require('express');
 const expressJoi = require('express-joi');
 const MessageRates = require('../business/messageRates');
 const path = require('path');
-const ServiceBusStatsPoller = require('../business/sbStatsPoller');
+const QueueInfoPoller = require('../business/queueInfoPoller');
 const wrap = require('../../middleware/promiseWrap');
 
 const router = express.Router();
 
-const serviceBusStatsPoller = new ServiceBusStatsPoller();
-const messageRates = new MessageRates();
+const queueInfoPoller = new QueueInfoPoller();
+const messageRates = new MessageRates(queueInfoPoller);
 
 const requestsSchema = {
   queue: expressJoi.Joi.types.String().alphanum().min(2).max(50).required(),
@@ -26,14 +26,13 @@ let config = null;
 let crawlerClient = null;
 
 router.init = (app, callback) => {
-  const providers = app.get('providers');
   config = app.get('runtimeConfig');
   const crawlerUrl = config.dashboard.crawler.url;
   const crawlerToken = config.dashboard.crawler.apiToken;
   crawlerClient = new CrawlerClient(crawlerUrl, crawlerToken);
 
-  serviceBusStatsPoller.initialize(config, providers.serviceBusClient);
-  serviceBusStatsPoller.startCollectingData();
+  queueInfoPoller.initialize(config);
+  queueInfoPoller.startCollectingData();
   messageRates.initialize(config);
   callback();
 };
@@ -86,7 +85,7 @@ router.put('/queue/:name', expressJoi.joiValidate(queueSchema), wrap(function*(r
 
 router.get('/queuesData', (request, response) => {
   request.insights.trackEvent('queuesDataGetStart');
-  response.json(serviceBusStatsPoller.getQueuesActiveMessageCountsData(request.query.sec));
+  response.json(queueInfoPoller.getQueuesActiveMessageCountsData(request.query.sec));
   request.insights.trackEvent('queuesDataGetComplete');
 });
 

@@ -1,26 +1,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-'use strict';
-
 const async = require('async');
 const appInsights = require('./appInsights');
 const debug = require('debug')('oss-initialize');
 const redis = require('redis');
 const RedisHelper = require('../lib/redis');
-const serviceBus = require('azure-sb');
 
 // Asynchronous initialization for the Express app, configuration and data stores.
 module.exports = function init(app, express, rootdir, config, configurationError, callback) {
   let redisClient;
-  let serviceBusClient;
   app.set('runtimeConfig', config);
   let providers = {};
   app.set('providers', providers);
   providers.insights = appInsights(app, config);
   const finalizeInitialization = (error) => {
     providers.redisClient = redisClient;
-    providers.serviceBusClient = serviceBusClient;
     try {
       require('./')(app, express, config, rootdir, redisClient, error);
     } catch (middlewareError) {
@@ -52,9 +47,6 @@ module.exports = function init(app, express, rootdir, config, configurationError
   }
   providers.config = config;
   debug('configuration secrets resolved');
-  if (config.dashboard.serviceBus.connectionString) {
-    serviceBusClient = serviceBus.createServiceBusService(config.dashboard.serviceBus.connectionString);
-  }
   let redisFirstCallback;
   let redisOptions = {
   };

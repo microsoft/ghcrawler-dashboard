@@ -21,7 +21,6 @@
     "applicationinsights": "^0.17.1",
     "async": "^2.1.4",
     "azure-keyvault": "^1.0.0",
-    "azure-sb": "geneh/azure-sb",
     "basic-auth": "^1.1.0",
     "body-parser": "~1.15.2",
     "compression": "^1.6.2",
