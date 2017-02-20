@@ -58,14 +58,14 @@ router.patch('/config', wrap(function*(request, response) {
 
 router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
   request.insights.trackEvent('dashboardGetRequestsStart');
-  const requests = yield crawlerClient.getRequests(request.params.queue, request.query.count);
+  const requests = yield crawlerClient.getRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
   request.insights.trackEvent('dashboardGetRequestsComplete');
 }));
 
 router.delete('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
   request.insights.trackEvent('dashboardDeleteRequestsStart');
-  const requests = yield crawlerClient.deleteRequests(request.params.queue, request.query.count);
+  const requests = yield crawlerClient.deleteRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
   request.insights.trackEvent('dashboardDeleteRequestsComplete');
 }));
@@ -79,7 +79,7 @@ router.post('/requests/:queue', wrap(function*(request, response) {
 
 router.put('/queue/:name', expressJoi.joiValidate(queueSchema), wrap(function*(request, response) {
   request.insights.trackEvent('dashboardFlushQueueStart');
-  yield crawlerClient.flushQueue(request.params.queue);
+  yield crawlerClient.flushQueue(request.params.name);
   response.sendStatus(200);
   request.insights.trackEvent('dashboardFlushQueueComplete');
 }));

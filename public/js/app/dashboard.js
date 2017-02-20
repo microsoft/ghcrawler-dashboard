@@ -286,7 +286,7 @@ function updateCrawlerConfiguration(payload) {
 function recreateQueue(name) {
   recreateQueueResponse.text('Recreating the queue...');
   $.ajax({
-    type: 'POST',
+    type: 'PUT',
     url: `/queue/${name}`,
     success: function (data, status, xhr) {
       recreateQueueResponse.text(JSON.stringify(data, null, 2));
