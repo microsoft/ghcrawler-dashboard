@@ -50,7 +50,7 @@ router.get('/config', wrap(function* (request, response) {
 
 router.patch('/config', wrap(function*(request, response) {
   request.insights.trackEvent('crawlerConfigPatchStart');
-  yield crawlerClient.patchConfiguration(request.body);
+  yield crawlerClient.configureCrawler(request.body);
   response.json({ success: true });
   request.insights.trackEvent('crawlerConfigPatchComplete');
 }));
