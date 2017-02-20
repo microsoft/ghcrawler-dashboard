@@ -8,12 +8,10 @@ const utils = require('../utils');
 module.exports = function (configApi) {
   const environmentProvider = configApi.environment;
   return {
-    amqp: {
-      connectionString: environmentProvider.get('CRAWLER_AMQP10_URL'),
-    },
     crawler: {
       name: environmentProvider.get('CRAWLER_NAME') || 'crawler',
-      subsystems: ['crawler', 'fetcher', 'queuing', 'storage', 'locker']
+      url: environmentProvider.get('CRAWLER_SERVICE_URL') || 'http://localhost:3000',
+      apiToken: environmentProvider.get('CRAWLER_SERVICE_AUTH_TOKEN') || 'secret'
     },
     serviceBus: {
       connectionString: environmentProvider.get('CRAWLER_SERVICEBUS_CONNECTION_STRING'),
@@ -22,7 +20,6 @@ module.exports = function (configApi) {
       messageRatesQueueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_MESSAGE_RATES_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
       metricsOperationNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_METRICS_OPERATION_NAMES') || ['push', 'repush', 'done', 'abandon']),
       pollingFrequencySec: environmentProvider.get('DASHBOARD_QUEUE_POLLING_FREQUENCY') || 5
-    },
-    configProvider: environmentProvider.get('DASHBOARD_CONFIG_PROVIDER') || 'redis'
+    }
   };
 };

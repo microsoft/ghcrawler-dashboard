@@ -7,7 +7,7 @@
   "extends": "eslint:recommended",
   "rules": {
     "indent": [
-      "error",
+      "warn",
       2
     ],
     "quotes": [

@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "adal-node": "^0.1.22",
-    "amqp10": "^3.4.0",
     "applicationinsights": "^0.17.1",
     "async": "^2.1.4",
     "azure-keyvault": "^1.0.0",
