@@ -33,7 +33,8 @@ router.init = (app, callback) => {
 
   queueInfoPoller.initialize(config);
   queueInfoPoller.startCollectingData();
-  messageRates.initialize(config);
+  const redisClient = app.get('providers').redisClient;
+  messageRates.initialize(config, redisClient);
   callback();
 };
 

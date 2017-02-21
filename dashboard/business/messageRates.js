@@ -12,12 +12,12 @@ class MessageRates {
     this.infoPoller = infoPoller;
   }
 
-  initialize(config) {
+  initialize(config, redisClient) {
     const queuingOptions = config.dashboard.queuing;
     this.queueNames = queuingOptions.messageRatesQueueNames;
     this.operations = queuingOptions.metricsOperationNames;
     this.crawlerName = config.dashboard.crawler.name;
-    this.metricsClient = new RedisMetricsClient(config);
+    this.metricsClient = new RedisMetricsClient(redisClient);
   }
 
   getMessageRatesData(sec = maxSec) {
