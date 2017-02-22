@@ -8,16 +8,16 @@ const RedisMetricsClient = require('./redisMetricsClient');
 const maxSec = 3600;
 
 class MessageRates {
-  constructor() {
+  constructor(infoPoller) {
+    this.infoPoller = infoPoller;
   }
 
-  initialize(config) {
-    const serviceBusConfig = config.dashboard.serviceBus;
-    this.queueNames = serviceBusConfig.messageRatesQueueNames;
-    this.operations = serviceBusConfig.metricsOperationNames;
-    this.queueNamePrefix = serviceBusConfig.queueNamePrefix;
+  initialize(config, redisClient) {
+    const queuingOptions = config.dashboard.queuing;
+    this.queueNames = queuingOptions.messageRatesQueueNames;
+    this.operations = queuingOptions.metricsOperationNames;
     this.crawlerName = config.dashboard.crawler.name;
-    this.metricsClient = new RedisMetricsClient(config);
+    this.metricsClient = new RedisMetricsClient(redisClient);
   }
 
   getMessageRatesData(sec = maxSec) {
@@ -32,11 +32,14 @@ class MessageRates {
     let isFirstTime = true;
     let promises = [];
     this.queueNames.forEach(queueName => {
-      this.operations.forEach(operation => {
-        const metricName = this.queueNamePrefix + ':' + queueName + ':' + operation;
-        const displayedMetricName = queueName + ':' + operation;
-        promises.push(this.metricsClient.getMetric(metricName, displayedMetricName, startTime, now));
-      });
+      const info = this.infoPoller.infos[queueName];
+      if (info && info.metricsName) {
+        this.operations.forEach(operation => {
+          const metricName = info.metricsName + ':' + operation;
+          const displayedMetricName = queueName + ':' + operation;
+          promises.push(this.metricsClient.getMetric(metricName, displayedMetricName, startTime, now));
+        });
+      }
     });
     const metricName = `${this.crawlerName}:github:fetch`;
     const displayedMetricName = 'github:fetch';

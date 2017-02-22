@@ -32,7 +32,7 @@ app.set('port', port);
 debugInitialization('initializing app & configuration');
 
 painlessConfigResolver.resolve((configurationError, config) => {
-  app.initializeApplication(config, configurationError, function (error) {
+  app.initializeApplication(config, configurationError, (error) => {
     if (error) throw error;
 
     var server = http.createServer(app);
@@ -56,7 +56,7 @@ painlessConfigResolver.resolve((configurationError, config) => {
 
       var bind = typeof port === 'string'
         ? 'Pipe ' + port
-        : 'Port ' + port
+        : 'Port ' + port;
 
       // handle specific listen errors with friendly messages
       switch (error.code) {
@@ -75,10 +75,8 @@ painlessConfigResolver.resolve((configurationError, config) => {
 
     function onListening() {
       var addr = server.address();
-      var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-      debug('Listening on ' + bind);
+      var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+      console.log(`Dashboard listening on ${bind}`);
     }
   });
 });
