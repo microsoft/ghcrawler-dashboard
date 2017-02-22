@@ -4,14 +4,14 @@
       "CONFIGURATION_ENVIRONMENT": "localhost",
       "DEBUG_ALLOW_HTTP": true,
       "CRAWLER_INSIGHTS_KEY": "",
-      "CRAWLER_NAME": "",
       "CRAWLER_SERVICE_URL": "",
-      "CRAWLER_QUEUE_PREFIX": "",
+
       "CRAWLER_REDIS_ACCESS_KEY": "",
       "CRAWLER_REDIS_PORT": "",
       "CRAWLER_REDIS_PREFIX": "local:crawldash",
       "CRAWLER_REDIS_TLS": "true",
       "CRAWLER_REDIS_URL": "",
+
       "AAD_CLIENT_SECRET": "",
       "AAD_CLIENT_ID": "",
       "AAD_TENANT_ID": "",
