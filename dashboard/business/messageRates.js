@@ -16,7 +16,6 @@ class MessageRates {
     const queuingOptions = config.dashboard.queuing;
     this.queueNames = queuingOptions.messageRatesQueueNames;
     this.operations = queuingOptions.metricsOperationNames;
-    this.crawlerName = config.dashboard.crawler.name;
     this.metricsClient = new RedisMetricsClient(redisClient);
   }
 
@@ -41,7 +40,7 @@ class MessageRates {
         });
       }
     });
-    const metricName = `${this.crawlerName}:github:fetch`;
+    const metricName = `${this.infoPoller.crawlerName}:github:fetch`;
     const displayedMetricName = 'github:fetch';
     promises.push(this.metricsClient.getMetric(metricName, displayedMetricName, startTime, now));
     Q.all(promises).then(results => {

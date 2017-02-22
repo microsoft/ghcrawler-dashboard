@@ -45,6 +45,8 @@ router.get('/', (request, response) => {
 router.get('/config', wrap(function* (request, response) {
   request.insights.trackEvent('crawlerConfigGetStart');
   const config = yield crawlerClient.getConfiguration();
+  config.crawler.url = crawlerClient.url;
+  queueInfoPoller.crawlerName = config.crawler.name;
   response.json(config);
   request.insights.trackEvent('crawlerConfigGetComplete');
 }));

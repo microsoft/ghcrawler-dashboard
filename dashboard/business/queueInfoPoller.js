@@ -12,6 +12,7 @@ class QueueInfoPoller {
       data: {}
     };
     this.infos = {};
+    this.crawlerName = null;
   }
 
   initialize(config) {

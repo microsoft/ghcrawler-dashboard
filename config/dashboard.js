@@ -7,7 +7,6 @@ module.exports = function (configApi) {
   const environmentProvider = configApi.environment;
   return {
     crawler: {
-      name: environmentProvider.get('CRAWLER_NAME') || 'crawler',
       url: environmentProvider.get('CRAWLER_SERVICE_URL') || 'http://localhost:3000',
       apiToken: environmentProvider.get('CRAWLER_SERVICE_AUTH_TOKEN') || 'secret'
     },

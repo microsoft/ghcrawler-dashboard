@@ -198,6 +198,7 @@ var updateConfigsAlert = $('#updateConfigsAlert');
 var initialUpdateConfigString = `[\n   { "op": "replace", "path": "/crawler/count", "value": 0 }\n]`;
 updateConfigs.val(initialUpdateConfigString);
 
+var crawlerUrl = $('#crawlerUrl');
 var currentConfigs = $('#currentConfigs');
 var refreshConfigsBtn = $('#refreshConfigsBtn');
 var currentConfigsAlert = $('#currentConfigsAlert');
@@ -259,6 +260,7 @@ $('#deleteRequestsBtn').click(function () {
 function retrieveCrawlerConfiguration() {
   $.get('/config', function (data, status, xhr) {
     if (status === 'success') {
+      crawlerUrl.text(data.crawler.url);
       currentConfigs.text(JSON.stringify(data, null, 2));
       displayAlert(currentConfigsAlert, false, 'Success!');
     } else {
