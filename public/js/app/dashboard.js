@@ -24,7 +24,7 @@ queuedMsgs60MinBtn.click(function () {
 });
 
 function updateButtonsActiveClass(clickedButton, otherButtons) {
-  otherButtons.forEach(function(button) {
+  otherButtons.forEach(function (button) {
     button.removeClass('active');
   });
   clickedButton.addClass('active');
@@ -97,7 +97,7 @@ function transformData(stats) {
   });
   times.unshift('x');
   transformedData.push(times);
-  Object.keys(stats.data).forEach(function(name) {
+  Object.keys(stats.data).forEach(function (name) {
     stats.data[name].unshift(name);
     transformedData.push(stats.data[name]);
   });
@@ -184,11 +184,11 @@ function refreshChart(chartName) {
   });
 }
 
-setInterval(function() {
+setInterval(function () {
   refreshChart('queuedMessages');
 }, 5000);
 
-setInterval(function() {
+setInterval(function () {
   refreshChart('messageRates');
 }, 8000);
 
@@ -224,6 +224,7 @@ var requestList = $('#requestList');
 var removeRequests = $('#removeRequests');
 var getRequestsAlert = $('#getRequestsAlert');
 var requestsModal = $('#requestsModal');
+var deadletterAlert = $('#deadletterAlert');
 
 retrieveCrawlerConfiguration();
 
@@ -255,6 +256,10 @@ $('#getRequestsBtn').click(function () {
 $('#deleteRequestsBtn').click(function () {
   requestsModal.modal('hide');
   getRequests(getQueueName.val(), getCount.val(), true);
+});
+
+$('#refreshDeadletterBtn').click(function () {
+  listDeadletters();
 });
 
 function retrieveCrawlerConfiguration() {
@@ -294,12 +299,12 @@ function recreateQueue(name) {
       recreateQueueResponse.text(JSON.stringify(data, null, 2));
       displayAlert(queueAlert, false, 'Success!');
     },
-    error: function(xhr) {
+    error: function (xhr) {
       var message = 'Error';
       if (xhr && xhr.responseText) {
         try {
           message = JSON.parse(xhr.responseText).message;
-        } catch(err) {
+        } catch (err) {
           message = xhr.responseText;
         }
       }
@@ -334,12 +339,12 @@ function getRequests(queue, count, remove) {
       requestList.text(JSON.stringify(data, null, 2));
       displayAlert(getRequestsAlert, false, 'Success!');
     },
-    error: function(xhr) {
+    error: function (xhr) {
       var message = 'Error';
       if (xhr && xhr.responseText) {
         try {
           message = JSON.parse(xhr.responseText).message;
-        } catch(err) {
+        } catch (err) {
           message = xhr.responseText;
         }
       }
@@ -348,9 +353,101 @@ function getRequests(queue, count, remove) {
   });
 }
 
+function listDeadletters() {
+  $("#deadletterList").jsGrid("openPage");
+}
+
 function displayAlert(element, isError, body) {
   element.html(body);
   element.addClass(isError ? 'alert-danger' : 'alert-success');
   element.removeClass(isError ? 'alert-success' : 'alert-danger');
   element.toggle(500).delay(isError ? 4000 : 1000).toggle(500);
+}
+
+var data = null;
+
+$('#deadletterList').jsGrid({
+  width: "100%",
+  height: "600px",
+
+  filtering: true,
+  editing: false,
+  sorting: true,
+  paging: false,
+  autoload: true,
+
+  // onDataLoaded: function (args) {
+  //   displayAlert(deadletterAlert, false, "Deadletters loaded");
+  // },
+
+  controller: {
+    loadData: function (filter) {
+      if (data === null) {
+        var d = $.Deferred();
+
+        $.ajax({
+          url: '/deadletters',
+          dataType: 'json'
+        }).done(function (response) {
+          data = response;
+          d.resolve(response);
+        });
+
+        return d.promise();
+      } else {
+        return $.grep(data, function (item) {
+          var typeMatches = !filter.type || item.type.toLowerCase().indexOf(filter.type.toLowerCase()) > -1;
+          var orgMatches = !filter.org || getOrg(item).toLowerCase().indexOf(filter.org.toLowerCase()) > -1;
+          var repoMatches = !filter.repo || getRepo(item).toLowerCase().indexOf(filter.repo.toLowerCase()) > -1;
+          var pathMatches = !filter.path || getPath(item).toLowerCase().indexOf(filter.path.toLowerCase()) > -1;
+          var reasonMatches = !filter.reason || getReason(item).toLowerCase().indexOf(filter.reason.toLowerCase()) > -1;
+
+          return typeMatches && orgMatches && repoMatches && pathMatches && reasonMatches;
+        });
+      }
+    }
+  },
+
+  fields: [
+    { name: "delete", title: "Delete", type: "checkbox", width: 50 },
+    { name: "type", title: "Type", type: "text", width: 100, itemTemplate: getType },
+    { name: "org", title: "Organization", type: "text", width: 100, itemTemplate: getOrg },
+    { name: "repo", title: "Repository", type: "text", width: 200, itemTemplate: getRepo },
+    { name: "path", title: "Path", type: "text", width: 200, itemTemplate: getPath },
+    { name: "reason", title: "Reason", type: "text", width: 300, itemTemplate: getReason}
+  ]
+});
+
+function getType(value, item) {
+  return (item || value).extra.type || '';
+}
+
+function getReason(value, item) {
+  return (item || value).extra.reason || '';
+}
+
+function getPath(value, item) {
+  var parser = document.createElement('a');
+  parser.href = (item || value).extra.url;
+  return parser.pathname;
+}
+
+function getOrg(value, item) {
+  var parser = document.createElement('a');
+  parser.href = (item || value).extra.url;
+  var segments = parser.pathname.split('/');
+  if (segments[1] === 'orgs' || segments[1] === 'repos') {
+    return segments[2];
+  }
+  return '';
+}
+
+function getRepo(value, item) {
+  var parser = document.createElement('a');
+  parser.href = (item || value).extra.url;
+  var segments = parser.pathname.split('/');
+  if (segments[1] === 'repos') {
+    return segments[3];
+  }
+  return '';
 }

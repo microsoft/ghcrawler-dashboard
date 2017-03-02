@@ -11,7 +11,7 @@ module.exports = function (configApi) {
       apiToken: environmentProvider.get('CRAWLER_SERVICE_AUTH_TOKEN') || 'secret'
     },
     queuing: {
-      queueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_QUEUE_NAMES') || ['deadletter', 'immediate', 'later', 'normal', 'soon']),
+      queueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
       messageRatesQueueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_MESSAGE_RATES_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
       metricsOperationNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_METRICS_OPERATION_NAMES') || ['push', 'repush', 'done', 'abandon']),
       pollingFrequencySec: environmentProvider.get('DASHBOARD_QUEUE_POLLING_FREQUENCY') || 5
