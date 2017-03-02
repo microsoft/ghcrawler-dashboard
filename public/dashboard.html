@@ -7,6 +7,11 @@
     <title>Crawler Dashboard</title>
     <link href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+    <style>
+      .jsgrid-cell { overflow: hidden; }
+    </style>
   </head>
 
   <body>
@@ -81,7 +86,7 @@
                 <div class="col-md-6">
                   <div class="input-group">
                     <span class="input-group-addon">Queue</span>
-                    <input id="recreateQueueName" type="text" class="form-control" size="10" value="deadletter"></input>
+                    <input id="recreateQueueName" type="text" class="form-control" size="10" value="normal"></input>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -100,7 +105,7 @@
                 <div class="col-md-5">
                   <div class="input-group">
                     <span class="input-group-addon">Queue</span>
-                    <input id="getQueueName" type="text" class="form-control" size="10" value="deadletter"></input>
+                    <input id="getQueueName" type="text" class="form-control" size="10" value="normal"></input>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -119,7 +124,7 @@
               <br>
               <div class="row">
                 <div class="col-md-12">
-                  <pre id="requestList"></pre>
+                  <textarea id="requestList" rows="20" cols="72"></textarea>
                 </div>
               </div>
             </div>
@@ -156,10 +161,32 @@
             </div>
             <div class="panel-body">
               <div id="currentConfigsAlert" class="alert" role="alert" style="display: none;"></div>
-              <pre id="currentConfigs"></pre>
+              <textarea id="currentConfigs" rows="30" cols="72"></textarea>
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="text-center">Manage Deadletters</h4>
+            </div>
+            <div class="panel-body">
+              <div id="deadletterAlert" class="alert" role="alert" style="display: none;"></div>
+              <div id="deadletterList"></div>
+              <p>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <button id="refreshDeadletterBtn" class="btn btn-primary">Refresh</button>
+                  </div>
+                </div>
+              </p>
+              <textarea id="deadletterText" rows="6" cols="100"></textarea>
+            </div>
+          </div>
+
       </div>
     </div>
 
@@ -202,6 +229,8 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
     <script src="js/app/dashboard.js"></script>
   </body>

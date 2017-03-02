@@ -58,6 +58,13 @@ router.patch('/config', wrap(function*(request, response) {
   request.insights.trackEvent('crawlerConfigPatchComplete');
 }));
 
+router.get('/deadletters', wrap(function*(request, response) {
+  request.insights.trackEvent('dashboardListDeadlettersStart');
+  const requests = yield crawlerClient.listDeadletters();
+  response.json(requests);
+  request.insights.trackEvent('dashboardListDeadlettersComplete');
+}));
+
 router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
   request.insights.trackEvent('dashboardGetRequestsStart');
   const requests = yield crawlerClient.getRequests(request.params.queue, parseInt(request.query.count, 10));
