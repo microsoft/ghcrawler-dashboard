@@ -99,7 +99,9 @@
       "env": {
         "NODE_ENV": "localhost",
         "CONFIGURATION_ENVIRONMENT": "localhost",
-        "DEBUG": "appinsights"
+        "DEBUG": "appinsights",
+        "CRAWLER_SERVICE_URL": "http://localhost:3000",
+        "DEBUG_ALLOW_HTTP": "1"
       },
       "console": "internalConsole"
     }
