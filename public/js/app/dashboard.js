@@ -419,22 +419,22 @@ $('#deadletterList').jsGrid({
 });
 
 function getType(value, item) {
-  return (item || value).extra_type || '';
+  return (item || value).extra.type || '';
 }
 
 function getReason(value, item) {
-  return (item || value).extra_reason || '';
+  return (item || value).extra.reason || '';
 }
 
 function getPath(value, item) {
   var parser = document.createElement('a');
-  parser.href = (item || value).extra_url;
+  parser.href = (item || value).extra.url;
   return parser.pathname;
 }
 
 function getOrg(value, item) {
   var parser = document.createElement('a');
-  parser.href = (item || value).extra_url;
+  parser.href = (item || value).extra.url;
   var segments = parser.pathname.split('/');
   if (segments[1] === 'orgs' || segments[1] === 'repos') {
     return segments[2];
@@ -444,7 +444,7 @@ function getOrg(value, item) {
 
 function getRepo(value, item) {
   var parser = document.createElement('a');
-  parser.href = (item || value).extra_url;
+  parser.href = (item || value).extra.url;
   var segments = parser.pathname.split('/');
   if (segments[1] === 'repos') {
     return segments[3];
