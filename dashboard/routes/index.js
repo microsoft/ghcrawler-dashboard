@@ -65,6 +65,25 @@ router.get('/deadletters', wrap(function*(request, response) {
   request.insights.trackEvent('dashboardListDeadlettersComplete');
 }));
 
+router.get('/deadletters/:urn', wrap(function*(request, response) {
+  request.insights.trackEvent('dashboardGetDeadletterStart');
+  const deadletters = yield crawlerClient.getDeadletter(request.params.urn);
+  response.json(deadletters);
+  request.insights.trackEvent('dashboardGetDeadletterComplete');
+}));
+
+router.delete('/deadletters/:urn', wrap(function*(request, response) {
+  request.insights.trackEvent('dashboardDeleteDeadletterStart');
+  const requeueQueueName = request.query.requeue;
+  if (requeueQueueName) {
+    yield crawlerClient.requeueDeadletter(request.params.urn, requeueQueueName);
+  } else {
+    yield crawlerClient.deleteDeadletter(request.params.urn);
+  }
+  response.json({});
+  request.insights.trackEvent('dashboardDeleteDeadletterComplete');
+}));
+
 router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
   request.insights.trackEvent('dashboardGetRequestsStart');
   const requests = yield crawlerClient.getRequests(request.params.queue, parseInt(request.query.count, 10));

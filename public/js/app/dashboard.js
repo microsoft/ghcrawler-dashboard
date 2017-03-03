@@ -225,6 +225,9 @@ var removeRequests = $('#removeRequests');
 var getRequestsAlert = $('#getRequestsAlert');
 var requestsModal = $('#requestsModal');
 var deadletterAlert = $('#deadletterAlert');
+var deleteDeadletterModal = $('#deleteDeadletterModal');
+var requeueDeadletterModal = $('#requeueDeadletterModal');
+var deadletterTotals = $('#deadletterTotals');
 
 retrieveCrawlerConfiguration();
 
@@ -260,6 +263,14 @@ $('#deleteRequestsBtn').click(function () {
 
 $('#refreshDeadletterBtn').click(function () {
   listDeadletters();
+});
+
+$('#deleteDeadletterBtn').click(function () {
+  deleteDeadletterItems();
+});
+
+$('#requeueDeadletterBtn').click(function () {
+  deleteDeadletterItems(true);
 });
 
 function retrieveCrawlerConfiguration() {
@@ -354,7 +365,56 @@ function getRequests(queue, count, remove) {
 }
 
 function listDeadletters() {
-  $("#deadletterList").jsGrid("openPage");
+  shouldReloadDeadlettersTable = true;
+  $('#deadletterList').jsGrid('loadData').done(function () {
+    displayAlert(deadletterAlert, false, 'Deadletters refreshed!');
+  });
+}
+
+function deleteDeadletterItems(shouldRequeue) {
+  if (selectedItems.length === 0) {
+    var message = 'Nothing to ';
+    if (shouldRequeue) {
+      requeueDeadletterModal.modal('hide');
+      message += 'requeue!';
+    } else {
+      deleteDeadletterModal.modal('hide');
+      message += 'delete!';
+    }
+    return displayAlert(deadletterAlert, false, message);
+  }
+  shouldReloadDeadlettersTable = true;
+  var promises = [];
+  $.each(selectedItems, function () {
+    var url = '/deadletters/' + encodeURIComponent(this.urn);
+    if (shouldRequeue) {
+      requeueDeadletterModal.modal('hide');
+      url += '?requeue=' + encodeURIComponent('soon');
+    } else {
+      deleteDeadletterModal.modal('hide');
+    }
+    var def = new $.Deferred();
+    $.ajax({
+      url: url,
+      type: 'DELETE',
+      dataType: 'json',
+      success: function (data, status, xhr) {
+        $('#deadletterList').jsGrid('loadData').done(function () {
+          def.resolve();
+        });
+      },
+      error: function (xhr) {
+        def.reject();
+      }
+    });
+    promises.push(def);
+  });
+  return $.when.apply(undefined, promises).then(() => {
+    var message = (shouldRequeue ? 'Deadletters requeued!' : 'Deadletters deleted!');
+    displayAlert(deadletterAlert, false, message);
+  }, (error) => {
+    displayAlert(deadletterAlert, true, 'Error');
+  });
 }
 
 function displayAlert(element, isError, body) {
@@ -365,10 +425,13 @@ function displayAlert(element, isError, body) {
 }
 
 var data = null;
+var selectedItems = [];
+var shouldReloadDeadlettersTable = false;
+var deadletterText = $('#deadletterText');
 
 $('#deadletterList').jsGrid({
-  width: "100%",
-  height: "600px",
+  width: '100%',
+  height: '400px',
 
   filtering: true,
   editing: false,
@@ -376,23 +439,43 @@ $('#deadletterList').jsGrid({
   paging: false,
   autoload: true,
 
-  // onDataLoaded: function (args) {
-  //   displayAlert(deadletterAlert, false, "Deadletters loaded");
-  // },
+  rowClick: function (args) {
+    $.ajax({
+      url: '/deadletters/' + encodeURIComponent(args.item.urn),
+      dataType: 'json',
+      success: function (data, status, xhr) {
+        deadletterText.text(JSON.stringify(data, null, 2));
+      },
+      error: function (xhr) {
+        var message = 'Error';
+        if (xhr && xhr.responseText) {
+          try {
+            message = JSON.parse(xhr.responseText).message;
+          } catch (err) {
+            message = xhr.responseText;
+          }
+        }
+        deadletterText.text('');
+        displayAlert(deadletterAlert, true, message);
+      }
+    });
+  },
 
   controller: {
     loadData: function (filter) {
-      if (data === null) {
+      deadletterText.text('');
+      selectedItems = [];
+      if (data === null || shouldReloadDeadlettersTable) {
+        shouldReloadDeadlettersTable = false;
         var d = $.Deferred();
-
         $.ajax({
           url: '/deadletters',
           dataType: 'json'
         }).done(function (response) {
           data = response;
+          displayDeadletterTotals(data.length);
           d.resolve(response);
         });
-
         return d.promise();
       } else {
         return $.grep(data, function (item) {
@@ -409,14 +492,37 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: "delete", title: "Delete", type: "checkbox", width: 50 },
-    { name: "type", title: "Type", type: "text", width: 100, itemTemplate: getType },
-    { name: "org", title: "Organization", type: "text", width: 100, itemTemplate: getOrg },
-    { name: "repo", title: "Repository", type: "text", width: 200, itemTemplate: getRepo },
-    { name: "path", title: "Path", type: "text", width: 200, itemTemplate: getPath },
-    { name: "reason", title: "Reason", type: "text", width: 300, itemTemplate: getReason}
+    { name: 'delete', title: 'Delete', width: 50, itemTemplate: getDelete },
+    { name: 'type', title: 'Type', type: 'text', width: 100, itemTemplate: getType },
+    { name: 'org', title: 'Organization', type: 'text', width: 100, itemTemplate: getOrg },
+    { name: 'repo', title: 'Repository', type: 'text', width: 200, itemTemplate: getRepo },
+    { name: 'path', title: 'Path', type: 'text', width: 200, itemTemplate: getPath },
+    { name: 'reason', title: 'Reason', type: 'text', width: 300, itemTemplate: getReason }
   ]
 });
+
+function displayDeadletterTotals(total) {
+  deadletterTotals.text('Total: ' + total);
+}
+
+function getDelete(value, item) {
+  var cbxSelectItem = $('<input type="checkbox">');
+  $(cbxSelectItem).on('change', function () {
+    $(this).is(':checked') ? selectItem(item) : unselectItem(item);
+  });
+  return cbxSelectItem;
+}
+
+function selectItem(item) {
+  selectedItems.push(item);
+}
+
+function unselectItem(item) {
+  var index = selectedItems.indexOf(item);
+  if (index != -1) {
+    selectedItems.splice(index, 1);
+  }
+}
 
 function getType(value, item) {
   return (item || value).extra.type || '';
