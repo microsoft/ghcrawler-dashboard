@@ -25,7 +25,7 @@
     "body-parser": "~1.15.2",
     "compression": "^1.6.2",
     "connect-redis": "^3.1.0",
-    "crawler-cli": "0.1.1",
+    "crawler-cli": "0.1.2",
     "debug": "~2.5.1",
     "express": "~4.14.0",
     "express-init": "^1.1.0",
