@@ -492,7 +492,7 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: 'delete', title: 'Delete', width: 50, itemTemplate: getDelete },
+    { name: 'select', title: 'Select', width: 50, itemTemplate: getDelete },
     { name: 'type', title: 'Type', type: 'text', width: 100, itemTemplate: getType },
     { name: 'org', title: 'Organization', type: 'text', width: 100, itemTemplate: getOrg },
     { name: 'repo', title: 'Repository', type: 'text', width: 200, itemTemplate: getRepo },
