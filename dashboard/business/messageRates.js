@@ -55,6 +55,8 @@ class MessageRates {
         });
       });
       deferred.resolve(stats);
+    }).catch(error => {
+      deferred.reject(error);
     });
     return deferred.promise;
   }

@@ -11,7 +11,13 @@ class RedisMetricsClient {
   }
 
   getMetric(name, displayedMetricName, startTime, endTime) {
-    const counter = this.redisMetrics.counter(name, { namespace: 'crawlermetrics' }); // Stored in Redis as {namespace}:{name}:{period}
+    let counter = null;
+    try {
+      counter = this.redisMetrics.counter(name, { namespace: 'crawlermetrics' }); // Stored in Redis as {namespace}:{name}:{period}
+    } catch (error) {
+      console.log('getMetric error:', error);
+      return Q.reject(error);
+    }
     const durationSec = endTime.diff(startTime, 'seconds');
     const timeGranularity = (durationSec > 600) ? 'minute' : 'second';
     if (durationSec < 60) {

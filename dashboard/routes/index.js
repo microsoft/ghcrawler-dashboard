@@ -123,6 +123,8 @@ router.get('/messageRatesData', (request, response) => {
   return messageRates.getMessageRatesData(request.query.sec).then(stats => {
     request.insights.trackEvent('messageRatesDataComplete');
     return response.json(stats);
+  }).catch(error => {
+    return response.status(500).end();
   });
 });
 
