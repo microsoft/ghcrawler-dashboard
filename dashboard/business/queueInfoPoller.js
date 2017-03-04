@@ -13,6 +13,7 @@ class QueueInfoPoller {
     };
     this.infos = {};
     this.crawlerName = null;
+    this.deadletterQueueName = 'deadletter';
   }
 
   initialize(config) {
@@ -21,6 +22,7 @@ class QueueInfoPoller {
     this.queueNames.forEach(queueName => {
       this.stats.data[queueName] = [];
     });
+    this.stats.data[this.deadletterQueueName] = [];
     this.pollingFrequencySec = config.dashboard.queuing.pollingFrequencySec;
     this.maxNumberOfDataPoints = Math.floor(maxSec / this.pollingFrequencySec);
   }
@@ -37,6 +39,7 @@ class QueueInfoPoller {
       this.queueNames.forEach(queueName => {
         data[queueName] = this.stats.data[queueName].slice(this.stats.data[queueName].length - maxNumberOfDataPointsToReturn);
       });
+      data[this.deadletterQueueName] = this.stats.data[this.deadletterQueueName].slice(this.stats.data[this.deadletterQueueName].length - maxNumberOfDataPointsToReturn);
       return {
         time: time,
         data: data
@@ -56,15 +59,23 @@ class QueueInfoPoller {
         self.crawlerClient.getInfo(`${queueName}`).then(info => {
           self.infos[queueName] = info;
           self.stats.data[queueName].push(parseInt(info.count));
-          if (self.stats.data[queueName].length > self.maxNumberOfDataPoints) {
-            self.stats.data[queueName].shift();
-          }
         }).catch(() => {
           self.stats.data[queueName].push(0);
+        }).finally(() => {
           if (self.stats.data[queueName].length > self.maxNumberOfDataPoints) {
             self.stats.data[queueName].shift();
           }
         });
+      });
+      self.crawlerClient.getDeadletterCount().then(count => {
+        self.infos[this.deadletterQueueName] = { count: count, metricsName: this.deadletterQueueName };
+        self.stats.data[this.deadletterQueueName].push(count);
+      }).catch(() => {
+        self.stats.data[this.deadletterQueueName].push(0);
+      }).finally(() => {
+        if (self.stats.data[this.deadletterQueueName].length > self.maxNumberOfDataPoints) {
+          self.stats.data[this.deadletterQueueName].shift();
+        }
       });
     }, this.pollingFrequencySec * 1000);
   }
