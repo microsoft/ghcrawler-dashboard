@@ -486,8 +486,8 @@ $('#deadletterList').jsGrid({
           var typeMatches = !filter.type || getType(item).toLowerCase().indexOf(filter.type.toLowerCase()) > -1;
           var pathMatches = !filter.path || getPath(item).toLowerCase().indexOf(filter.path.toLowerCase()) > -1;
           var reasonMatches = !filter.reason || getReason(item).toLowerCase().indexOf(filter.reason.toLowerCase()) > -1;
-          var proceesedDateMatches = !filter.processedDate || getProcessedDate(item).toLowerCase().indexOf(filter.processedDate.toLowerCase()) > -1;
-          return typeMatches && pathMatches && reasonMatches && proceesedDateMatches;
+          var dateMatches = !filter.date || getDate(item).toLowerCase().indexOf(filter.date.toLowerCase()) > -1;
+          return typeMatches && pathMatches && reasonMatches && dateMatches;
         });
         displayDeadletterCount(deadletterFilteredCount, 'Filtered', grepResult.length);
         return grepResult;
@@ -500,7 +500,7 @@ $('#deadletterList').jsGrid({
     { name: 'type', title: 'Type', type: 'text', width: 80, itemTemplate: getType },
     { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
     { name: 'reason', title: 'Reason', type: 'text', itemTemplate: getReason },
-    { name: 'processedDate', title: 'Processed date', type: 'text', itemTemplate: getProcessedDate }
+    { name: 'date', title: 'Date', type: 'text', itemTemplate: getDate }
   ]
 });
 
@@ -553,6 +553,6 @@ function getPath(value, item) {
   return parser.pathname;
 }
 
-function getProcessedDate(value, item) {
-  return (item || value).fetchedat || '';
+function getDate(value, item) {
+  return (item || value).processedat || '';
 }
