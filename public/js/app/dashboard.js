@@ -426,7 +426,7 @@ var deadletterText = $('#deadletterText');
 
 $('#deadletterList').jsGrid({
   width: '100%',
-  height: '400px',
+  height: '600px',
 
   filtering: true,
   editing: false,
@@ -496,11 +496,11 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: 'select', title: 'Select', type: 'checkbox', width: 50, itemTemplate: getSelect, filterValue: getFilterValue },
-    { name: 'type', title: 'Type', type: 'text', width: 80, itemTemplate: getType },
+    { name: 'select', title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue },
+    { name: 'type', title: 'Type', type: 'text', width: 40, itemTemplate: getType },
     { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
-    { name: 'reason', title: 'Reason', type: 'text', itemTemplate: getReason },
-    { name: 'date', title: 'Date', type: 'text', itemTemplate: getDate }
+    { name: 'reason', title: 'Reason', type: 'text', width: 50, itemTemplate: getReason },
+    { name: 'date', title: 'Date', type: 'text', width: 45, itemTemplate: getDate }
   ]
 });
 
@@ -554,5 +554,5 @@ function getPath(value, item) {
 }
 
 function getDate(value, item) {
-  return (item || value).processedat || '';
+  return (item || value).processedat.substr(2, 17) || '';
 }
