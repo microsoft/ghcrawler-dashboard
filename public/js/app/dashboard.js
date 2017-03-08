@@ -488,7 +488,7 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: 'select', title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue },
+    { name: 'select', title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue, sorting: false },
     { name: 'type', title: 'Type', type: 'text', width: 40, itemTemplate: getType },
     { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
     { name: 'reason', title: 'Reason', type: 'text', width: 50, itemTemplate: getReason },
