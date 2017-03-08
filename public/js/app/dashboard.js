@@ -227,7 +227,9 @@ var requestsModal = $('#requestsModal');
 var deadletterAlert = $('#deadletterAlert');
 var deleteDeadletterModal = $('#deleteDeadletterModal');
 var requeueDeadletterModal = $('#requeueDeadletterModal');
-var deadletterTotals = $('#deadletterTotals');
+var deadletterTotalCount = $('#deadletterTotalCount');
+var deadletterSelectedCount = $('#deadletterSelectedCount');
+var deadletterFilteredCount = $('#deadletterFilteredCount');
 
 retrieveCrawlerConfiguration();
 
@@ -433,6 +435,13 @@ $('#deadletterList').jsGrid({
   autoload: true,
 
   rowClick: function (args) {
+    var selectedCount = 0;
+    $('input[type=checkbox]').each(function () {
+      if ($(this).is(':checked')) {
+        selectedCount++;
+      }
+    });
+    displayDeadletterCount(deadletterSelectedCount, 'Selected', selectedCount);
     $.ajax({
       url: '/deadletters/' + encodeURIComponent(args.item.urn),
       dataType: 'json',
@@ -466,35 +475,37 @@ $('#deadletterList').jsGrid({
           dataType: 'json'
         }).done(function (response) {
           data = response;
-          displayDeadletterTotals(data.length);
+          displayDeadletterCount(deadletterTotalCount, 'Total', data.length);
+          displayDeadletterCount(deadletterSelectedCount, 'Selected', selectedItems.length);
+          displayDeadletterCount(deadletterFilteredCount, 'Filtered', 0);
           d.resolve(response);
         });
         return d.promise();
       } else {
-        return $.grep(data, function (item) {
-          var typeMatches = !filter.type || item.type.toLowerCase().indexOf(filter.type.toLowerCase()) > -1;
-          var orgMatches = !filter.org || getOrg(item).toLowerCase().indexOf(filter.org.toLowerCase()) > -1;
-          var repoMatches = !filter.repo || getRepo(item).toLowerCase().indexOf(filter.repo.toLowerCase()) > -1;
+        var grepResult = $.grep(data, function (item) {
+          var typeMatches = !filter.type || getType(item).toLowerCase().indexOf(filter.type.toLowerCase()) > -1;
           var pathMatches = !filter.path || getPath(item).toLowerCase().indexOf(filter.path.toLowerCase()) > -1;
           var reasonMatches = !filter.reason || getReason(item).toLowerCase().indexOf(filter.reason.toLowerCase()) > -1;
-          return typeMatches && orgMatches && repoMatches && pathMatches && reasonMatches;
+          var dateMatches = !filter.date || getDate(item).toLowerCase().indexOf(filter.date.toLowerCase()) > -1;
+          return typeMatches && pathMatches && reasonMatches && dateMatches;
         });
+        displayDeadletterCount(deadletterFilteredCount, 'Filtered', grepResult.length);
+        return grepResult;
       }
     }
   },
 
   fields: [
     { name: 'select', title: 'Select', type: 'checkbox', width: 50, itemTemplate: getSelect, filterValue: getFilterValue },
-    { name: 'type', title: 'Type', type: 'text', width: 100, itemTemplate: getType },
-    { name: 'org', title: 'Organization', type: 'text', width: 100, itemTemplate: getOrg },
-    { name: 'repo', title: 'Repository', type: 'text', width: 200, itemTemplate: getRepo },
-    { name: 'path', title: 'Path', type: 'text', width: 200, itemTemplate: getPath },
-    { name: 'reason', title: 'Reason', type: 'text', width: 300, itemTemplate: getReason }
+    { name: 'type', title: 'Type', type: 'text', width: 80, itemTemplate: getType },
+    { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
+    { name: 'reason', title: 'Reason', type: 'text', itemTemplate: getReason },
+    { name: 'date', title: 'Date', type: 'text', itemTemplate: getDate }
   ]
 });
 
-function displayDeadletterTotals(total) {
-  deadletterTotals.text('Total: ' + total);
+function displayDeadletterCount(element, text, total) {
+  element.html(text + ': <span class="badge">' + total + '</span>');
 }
 
 function getSelect(value, item) {
@@ -507,6 +518,7 @@ function getSelect(value, item) {
   $(cbxSelectItem).on('change', function () {
     $(this).is(':checked') ? selectItem(item) : unselectItem(item);
   });
+  displayDeadletterCount(deadletterSelectedCount, 'Selected', selectedItems.length);
   return cbxSelectItem;
 }
 
@@ -541,22 +553,6 @@ function getPath(value, item) {
   return parser.pathname;
 }
 
-function getOrg(value, item) {
-  var parser = document.createElement('a');
-  parser.href = (item || value).extra.url;
-  var segments = parser.pathname.split('/');
-  if (segments[1] === 'orgs' || segments[1] === 'repos') {
-    return segments[2];
-  }
-  return '';
-}
-
-function getRepo(value, item) {
-  var parser = document.createElement('a');
-  parser.href = (item || value).extra.url;
-  var segments = parser.pathname.split('/');
-  if (segments[1] === 'repos') {
-    return segments[3];
-  }
-  return '';
+function getDate(value, item) {
+  return (item || value).processedat || '';
 }
