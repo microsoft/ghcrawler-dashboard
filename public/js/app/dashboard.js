@@ -488,11 +488,11 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: 'select', title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue, sorting: false },
-    { name: 'type', title: 'Type', type: 'text', width: 40, itemTemplate: getType },
-    { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
-    { name: 'reason', title: 'Reason', type: 'text', width: 50, itemTemplate: getReason },
-    { name: 'date', title: 'Date', type: 'text', width: 45, itemTemplate: getDate }
+    { title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue, sorting: false },
+    { name: 'type', title: 'Type', type: 'text', width: 40 },
+    { name: 'path', title: 'Path', type: 'text' },
+    { name: 'reason', title: 'Reason', type: 'text', width: 50 },
+    { name: 'date', title: 'Date', type: 'text', width: 45 }
   ]
 });
 
@@ -532,19 +532,17 @@ function unselectItem(item) {
 }
 
 function getType(value, item) {
-  return (item || value).extra.type || '';
+  return (item || value).type || '';
 }
 
 function getReason(value, item) {
-  return (item || value).extra.reason || '';
+  return (item || value).reason || '';
 }
 
 function getPath(value, item) {
-  var parser = document.createElement('a');
-  parser.href = (item || value).extra.url;
-  return parser.pathname;
+  return (item || value).path || '';
 }
 
 function getDate(value, item) {
-  return (item || value).processedat.substr(2, 17) || '';
+  return (item || value).date || '';
 }

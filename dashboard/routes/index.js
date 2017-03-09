@@ -9,6 +9,7 @@ const path = require('path');
 const Q = require('q');
 const qlimit = require('qlimit');
 const QueueInfoPoller = require('../business/queueInfoPoller');
+const url = require('url');
 const wrap = require('../../middleware/promiseWrap');
 
 const router = express.Router();
@@ -68,8 +69,17 @@ router.patch('/config', wrap(function*(request, response) {
 
 router.get('/deadletters', wrap(function*(request, response) {
   request.insights.trackEvent('dashboardListDeadlettersStart');
-  const requests = yield crawlerClient.listDeadletters();
-  response.json(requests);
+  let deadletters = yield crawlerClient.listDeadletters();
+  deadletters = deadletters.map(letter => {
+    return {
+      type: letter.extra.type,
+      path: url.parse(letter.extra.url).pathname,
+      reason: letter.extra.reason,
+      date: letter.processedat.substr(2, 17),
+      urn: letter.urn
+    };
+  })
+  response.json(deadletters);
   request.insights.trackEvent('dashboardListDeadlettersComplete');
 }));
 
