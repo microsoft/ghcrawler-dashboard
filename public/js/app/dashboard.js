@@ -82,7 +82,7 @@ TO:
    ...
  ]
  FROM:
-  {"time":["2016-12-28T21:28:40Z","2016-12-28T21:28:41Z"],"data":{"deadletter:push":[0,0],"deadletter:repush":[0,0],"deadletter:done":[0,0],"deadletter:abandon":[0,0],"immediate:push":[0,0],"immediate:repush":[0,0],"immediate:done":[0,0],"immediate:abandon":[0,0],"later:push":[0,0],"later:repush":[0,0],"later:done":[0,0],"later:abandon":[0,0],"normal:push":[2,1],"normal:repush":[0,0],"normal:done":[0,0],"normal:abandon":[0,0],"soon:push":[0,0],"soon:repush":[0,0],"soon:done":[0,0],"soon:abandon":[0,0]}}
+  {"time":["2016-12-28T21:28:40Z","2016-12-28T21:28:41Z"],"data":{"deadletter:push":[0,0],"deadletter:done":[0,0],"deadletter:abandon":[0,0],"immediate:push":[0,0],"immediate:done":[0,0],"immediate:abandon":[0,0],"later:push":[0,0],"later:done":[0,0],"later:abandon":[0,0],"normal:push":[2,1],"normal:done":[0,0],"normal:abandon":[0,0],"soon:push":[0,0],"soon:done":[0,0],"soon:abandon":[0,0]}}
  TO:
   columns: [
     ['x', "2016-12-28T21:28:40Z","2016-12-28T21:28:41Z"],
