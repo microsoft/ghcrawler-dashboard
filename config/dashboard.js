@@ -13,7 +13,7 @@ module.exports = function (configApi) {
     queuing: {
       queueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
       messageRatesQueueNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_MESSAGE_RATES_QUEUE_NAMES') || ['immediate', 'later', 'normal', 'soon']),
-      metricsOperationNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_METRICS_OPERATION_NAMES') || ['push', 'repush', 'done', 'abandon']),
+      metricsOperationNames: utils.arrayFromString(environmentProvider.get('DASHBOARD_METRICS_OPERATION_NAMES') || ['push', 'done', 'abandon']),
       pollingFrequencySec: environmentProvider.get('DASHBOARD_QUEUE_POLLING_FREQUENCY') || 5
     }
   };
