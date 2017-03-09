@@ -381,33 +381,25 @@ function deleteDeadletterItems(shouldRequeue) {
   }
   displayAlert(deadletterAlert, false, 'Processing ' + selectedItems.length + ' deadletters...');
   shouldReloadDeadlettersTable = true;
-  var promises = [];
+  var urns = [];
   $.each(selectedItems, function () {
-    var url = '/deadletters/' + encodeURIComponent(this.urn);
-    if (shouldRequeue) {
-      url += '?requeue=' + encodeURIComponent('soon');
-    }
-    var def = new $.Deferred();
-    $.ajax({
-      url: url,
-      type: 'DELETE',
-      dataType: 'json',
-      success: function (data, status, xhr) {
-        def.resolve();
-      },
-      error: function (xhr) {
-        def.reject();
-      }
-    });
-    promises.push(def);
+    urns.push(this.urn);
   });
-  return $.when.apply(undefined, promises).then(() => {
-    $('#deadletterList').jsGrid('loadData').done(function () {
-      var message = (shouldRequeue ? 'Deadletters requeued!' : 'Deadletters deleted!');
-      displayAlert(deadletterAlert, false, message);
-    });
-  }, (error) => {
-    displayAlert(deadletterAlert, true, 'Error');
+  $.ajax({
+    url: '/deadletters?action=' + (shouldRequeue ? 'requeue' : 'delete'),
+    type: 'POST',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify({ urns: urns }),
+    success: function (data, status, xhr) {
+      $('#deadletterList').jsGrid('loadData').done(function () {
+        var message = (shouldRequeue ? 'Deadletters requeued!' : 'Deadletters deleted!');
+        displayAlert(deadletterAlert, false, message);
+      });
+    },
+    error: function (xhr) {
+      displayAlert(deadletterAlert, true, 'Error');
+    }
   });
 }
 
@@ -426,7 +418,7 @@ var deadletterText = $('#deadletterText');
 
 $('#deadletterList').jsGrid({
   width: '100%',
-  height: '400px',
+  height: '600px',
 
   filtering: true,
   editing: false,
@@ -496,11 +488,11 @@ $('#deadletterList').jsGrid({
   },
 
   fields: [
-    { name: 'select', title: 'Select', type: 'checkbox', width: 50, itemTemplate: getSelect, filterValue: getFilterValue },
-    { name: 'type', title: 'Type', type: 'text', width: 80, itemTemplate: getType },
-    { name: 'path', title: 'Path', type: 'text', itemTemplate: getPath },
-    { name: 'reason', title: 'Reason', type: 'text', itemTemplate: getReason },
-    { name: 'date', title: 'Date', type: 'text', itemTemplate: getDate }
+    { title: 'Select', type: 'checkbox', width: 20, itemTemplate: getSelect, filterValue: getFilterValue, sorting: false },
+    { name: 'type', title: 'Type', type: 'text', width: 40 },
+    { name: 'path', title: 'Path', type: 'text' },
+    { name: 'reason', title: 'Reason', type: 'text', width: 50 },
+    { name: 'date', title: 'Date', type: 'text', width: 45 }
   ]
 });
 
@@ -540,19 +532,17 @@ function unselectItem(item) {
 }
 
 function getType(value, item) {
-  return (item || value).extra.type || '';
+  return (item || value).type || '';
 }
 
 function getReason(value, item) {
-  return (item || value).extra.reason || '';
+  return (item || value).reason || '';
 }
 
 function getPath(value, item) {
-  var parser = document.createElement('a');
-  parser.href = (item || value).extra.url;
-  return parser.pathname;
+  return (item || value).path || '';
 }
 
 function getDate(value, item) {
-  return (item || value).processedat || '';
+  return (item || value).date || '';
 }

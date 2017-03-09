@@ -6,7 +6,10 @@ const express = require('express');
 const expressJoi = require('express-joi');
 const MessageRates = require('../business/messageRates');
 const path = require('path');
+const Q = require('q');
+const qlimit = require('qlimit');
 const QueueInfoPoller = require('../business/queueInfoPoller');
+const url = require('url');
 const wrap = require('../../middleware/promiseWrap');
 
 const router = express.Router();
@@ -20,6 +23,12 @@ const requestsSchema = {
 };
 const queueSchema = {
   name: expressJoi.Joi.types.String().alphanum().min(2).max(50).required()
+};
+
+const deadlettersSchema = {
+  action: expressJoi.Joi.types.String().valid(['delete', 'requeue']).required(),
+  queue: expressJoi.Joi.types.String().alphanum().min(2).max(50),
+  urns: expressJoi.Joi.array().min(1)
 };
 
 let config = null;
@@ -60,8 +69,17 @@ router.patch('/config', wrap(function*(request, response) {
 
 router.get('/deadletters', wrap(function*(request, response) {
   request.insights.trackEvent('dashboardListDeadlettersStart');
-  const requests = yield crawlerClient.listDeadletters();
-  response.json(requests);
+  let deadletters = yield crawlerClient.listDeadletters();
+  deadletters = deadletters.map(letter => {
+    return {
+      type: letter.extra.type,
+      path: url.parse(letter.extra.url).pathname,
+      reason: letter.extra.reason,
+      date: letter.processedat.substr(2, 17),
+      urn: letter.urn
+    };
+  })
+  response.json(deadletters);
   request.insights.trackEvent('dashboardListDeadlettersComplete');
 }));
 
@@ -72,16 +90,19 @@ router.get('/deadletters/:urn', wrap(function*(request, response) {
   request.insights.trackEvent('dashboardGetDeadletterComplete');
 }));
 
-router.delete('/deadletters/:urn', wrap(function*(request, response) {
-  request.insights.trackEvent('dashboardDeleteDeadletterStart');
-  const requeueQueueName = request.query.requeue;
-  if (requeueQueueName) {
-    yield crawlerClient.requeueDeadletter(request.params.urn, requeueQueueName);
-  } else {
-    yield crawlerClient.deleteDeadletter(request.params.urn);
-  }
-  response.json({});
-  request.insights.trackEvent('dashboardDeleteDeadletterComplete');
+router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(function* (request, response) {
+  request.insights.trackEvent('dashboardPostDeadletterStart');
+  const action = request.query.action;
+  const requeueQueueName = request.query.queue || 'soon';
+  const urns = request.body.urns;
+  yield Q.all(urns.map(qlimit(10)(urn => {
+    if (action === 'requeue') {
+      return crawlerClient.requeueDeadletter(urn, requeueQueueName);
+    }
+    return crawlerClient.deleteDeadletter(urn);
+  })));
+  response.json({ success: true });
+  request.insights.trackEvent('dashboardPostDeadletterComplete');
 }));
 
 router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
