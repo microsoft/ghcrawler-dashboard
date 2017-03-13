@@ -8,9 +8,9 @@ EXPOSE 5858
 RUN npm install -g nodemon
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install --production
-RUN mkdir -p /opt/crawler-dashboard && cp -a /tmp/node_modules /opt/crawler-dashboard/
+RUN mkdir -p /opt/ghcrawler-dashboard && cp -a /tmp/node_modules /opt/ghcrawler-dashboard/
 
-WORKDIR /opt/crawler-dashboard
-ADD . /opt/crawler-dashboard
+WORKDIR /opt/ghcrawler-dashboard
+ADD . /opt/ghcrawler-dashboard
 
 CMD nodemon --debug ./bin/www

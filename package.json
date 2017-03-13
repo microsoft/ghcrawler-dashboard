@@ -1,5 +1,5 @@
 {
-  "name": "crawler-dashboard",
+  "name": "ghcrawler-dashboard",
   "version": "0.1.1",
   "description": "Crawler UI Dashboard",
   "main": "./bin/www",
@@ -14,7 +14,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microsoft/crawler-dashboard.git"
+    "url": "git+https://github.com/microsoft/ghcrawler-dashboard.git"
   },
   "dependencies": {
     "adal-node": "^0.1.22",
