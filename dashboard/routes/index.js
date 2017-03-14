@@ -95,7 +95,7 @@ router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(func
   const action = request.query.action;
   const requeueQueueName = request.query.queue || 'soon';
   const urns = request.body.urns;
-  yield Q.all(urns.map(qlimit(10)(urn => {
+  yield Q.allSettled(urns.map(qlimit(10)(urn => {
     if (action === 'requeue') {
       return crawlerClient.requeueDeadletter(urn, requeueQueueName);
     }
