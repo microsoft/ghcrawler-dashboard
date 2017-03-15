@@ -60,14 +60,14 @@ router.get('/config', wrap(function* (request, response) {
   request.insights.trackEvent('crawlerConfigGetComplete');
 }));
 
-router.patch('/config', wrap(function*(request, response) {
+router.patch('/config', wrap(function* (request, response) {
   request.insights.trackEvent('crawlerConfigPatchStart');
   yield crawlerClient.configureCrawler(request.body);
   response.json({ success: true });
   request.insights.trackEvent('crawlerConfigPatchComplete');
 }));
 
-router.get('/deadletters', wrap(function*(request, response) {
+router.get('/deadletters', wrap(function* (request, response) {
   request.insights.trackEvent('dashboardListDeadlettersStart');
   let deadletters = yield crawlerClient.listDeadletters();
   deadletters = deadletters.map(letter => {
@@ -75,15 +75,15 @@ router.get('/deadletters', wrap(function*(request, response) {
       type: letter.extra.type,
       path: url.parse(letter.extra.url).pathname,
       reason: letter.extra.reason,
-      date: letter.processedat.substr(2, 17),
+      date: letter.processedAt.substr(2, 17),
       urn: letter.urn
     };
-  })
+  });
   response.json(deadletters);
   request.insights.trackEvent('dashboardListDeadlettersComplete');
 }));
 
-router.get('/deadletters/:urn', wrap(function*(request, response) {
+router.get('/deadletters/:urn', wrap(function* (request, response) {
   request.insights.trackEvent('dashboardGetDeadletterStart');
   const deadletters = yield crawlerClient.getDeadletter(request.params.urn);
   response.json(deadletters);
@@ -115,28 +115,28 @@ router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(func
   request.insights.trackEvent('dashboardPostDeadletterComplete');
 }));
 
-router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
+router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function* (request, response) {
   request.insights.trackEvent('dashboardGetRequestsStart');
   const requests = yield crawlerClient.getRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
   request.insights.trackEvent('dashboardGetRequestsComplete');
 }));
 
-router.delete('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function*(request, response) {
+router.delete('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function* (request, response) {
   request.insights.trackEvent('dashboardDeleteRequestsStart');
   const requests = yield crawlerClient.deleteRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
   request.insights.trackEvent('dashboardDeleteRequestsComplete');
 }));
 
-router.post('/requests/:queue', wrap(function*(request, response) {
+router.post('/requests/:queue', wrap(function* (request, response) {
   request.insights.trackEvent('dashboardQueueRequestStart');
   yield crawlerClient.queueRequests(request.body, request.params.queue || 'normal');
   response.sendStatus(201);
   request.insights.trackEvent('dashboardQueueRequestComplete');
 }));
 
-router.put('/queue/:name', expressJoi.joiValidate(queueSchema), wrap(function*(request, response) {
+router.put('/queue/:name', expressJoi.joiValidate(queueSchema), wrap(function* (request, response) {
   request.insights.trackEvent('dashboardFlushQueueStart');
   yield crawlerClient.flushQueue(request.params.name);
   response.sendStatus(200);
