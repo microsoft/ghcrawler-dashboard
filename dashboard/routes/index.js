@@ -107,7 +107,7 @@ router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(func
       errors.push(result.reason.message);
     }
   });
-  let respMessage = { success: true };
+  const respMessage = { success: true };
   if (errors.length > 0) {
     respMessage.warnings = errors;
   }
