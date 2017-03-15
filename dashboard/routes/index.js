@@ -95,13 +95,23 @@ router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(func
   const action = request.query.action;
   const requeueQueueName = request.query.queue || 'soon';
   const urns = request.body.urns;
-  yield Q.all(urns.map(qlimit(10)(urn => {
+  const results = yield Q.allSettled(urns.map(qlimit(10)(urn => {
     if (action === 'requeue') {
       return crawlerClient.requeueDeadletter(urn, requeueQueueName);
     }
     return crawlerClient.deleteDeadletter(urn);
   })));
-  response.json({ success: true });
+  const errors = [];
+  results.forEach(result => {
+    if (result.state === 'rejected') {
+      errors.push(result.reason.message);
+    }
+  });
+  const respMessage = { success: true };
+  if (errors.length > 0) {
+    respMessage.warnings = errors;
+  }
+  response.json(respMessage);
   request.insights.trackEvent('dashboardPostDeadletterComplete');
 }));
 

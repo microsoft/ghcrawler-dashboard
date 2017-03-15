@@ -225,6 +225,7 @@ var removeRequests = $('#removeRequests');
 var getRequestsAlert = $('#getRequestsAlert');
 var requestsModal = $('#requestsModal');
 var deadletterAlert = $('#deadletterAlert');
+var deadletterWarning = $('#deadletterWarning');
 var deleteDeadletterModal = $('#deleteDeadletterModal');
 var requeueDeadletterModal = $('#requeueDeadletterModal');
 var deadletterTotalCount = $('#deadletterTotalCount');
@@ -395,6 +396,7 @@ function deleteDeadletterItems(shouldRequeue) {
       $('#deadletterList').jsGrid('loadData').done(function () {
         var message = (shouldRequeue ? 'Deadletters requeued!' : 'Deadletters deleted!');
         displayAlert(deadletterAlert, false, message);
+        displayWarning(deadletterWarning, data.warnings);
       });
     },
     error: function (xhr) {
@@ -408,6 +410,18 @@ function displayAlert(element, isError, body) {
   element.addClass(isError ? 'alert-danger' : 'alert-success');
   element.removeClass(isError ? 'alert-success' : 'alert-danger');
   element.toggle(500).delay(isError ? 4000 : 1000).toggle(500);
+}
+
+function displayWarning(element, warnings) {
+  if (warnings) {
+    var warningText = '<ul>';
+    warnings.forEach(function (warning) {
+      warningText += '<li>' + warning + '</li>';
+    });
+    warningText += '</ul>';
+    element.html(warningText);
+    element.toggle(500).delay(20000).toggle(500);
+  }
 }
 
 var data = null;

@@ -23,7 +23,7 @@ module.exports = function initMiddleware(app, express, config, dirname, redisCli
   app.set('view engine', 'pug');
   app.set('view cache', false);
 
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '2mb' }));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(compression());
 
