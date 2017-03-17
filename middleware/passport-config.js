@@ -42,6 +42,7 @@ module.exports = function (app, config) {
     responseType: 'id_token code',
     responseMode: 'form_post',
     validateIssuer: true,
+    loggingLevel: 'info'
   }, activeDirectorySubset);
 
   passport.use('azure-active-directory', aadStrategy);
