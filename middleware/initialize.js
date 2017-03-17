@@ -24,11 +24,11 @@ module.exports = function init(app, express, rootdir, config, configurationError
     if (!error) {
       app.use('/', require('../dashboard/'));
     } else {
+      debug('App crashed because of an initialization error.');
+      debug(error);
       const appInsightsClient = providers.insights;
-      const crash = (error) => {
+      const crash = () => {
         return () => {
-          debug('App crashed because of an initialization error.');
-          debug(error);
           process.exit(1);
         };
       };
