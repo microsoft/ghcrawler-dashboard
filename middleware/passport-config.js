@@ -41,8 +41,7 @@ module.exports = function (app, config) {
     identityMetadata: 'https://login.microsoftonline.com/' + config.activeDirectory.tenantId + '/.well-known/openid-configuration',
     responseType: 'id_token code',
     responseMode: 'form_post',
-    validateIssuer: true,
-    loggingLevel: 'info'
+    validateIssuer: true
   }, activeDirectorySubset);
 
   passport.use('azure-active-directory', aadStrategy);
