@@ -1,0 +1,2 @@
+# enableXFF - controls whether iisnode adds or modifies the X-Forwarded-For request HTTP header with the IP address of the remote host
+enableXFF: true
