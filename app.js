@@ -6,6 +6,7 @@ const app = express();
 const initialize = require('./middleware/initialize');
 const path = require('path');
 
+app.disable('x-powered-by');
 app.initializeApplication = initialize.bind(undefined, app, express, __dirname);
 
 app.use(express.static(path.join(__dirname, 'public')));
