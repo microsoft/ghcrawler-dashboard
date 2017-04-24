@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-const CrawlerClient = require('crawler-cli');
+const CrawlerClient = require('ghcrawler-cli');
 const express = require('express');
 const expressJoi = require('express-joi');
 const MessageRates = require('../business/messageRates');

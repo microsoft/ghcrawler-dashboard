@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const CrawlerClient = require('crawler-cli');
+const CrawlerClient = require('ghcrawler-cli');
 
 const maxSec = 3600;
 
