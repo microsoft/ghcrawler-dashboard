@@ -71,6 +71,19 @@ router.get('/deadletters', wrap(function* (request, response) {
   request.insights.trackEvent('dashboardListDeadlettersStart');
   let deadletters = yield crawlerClient.listDeadletters();
   deadletters = deadletters.map(letter => {
+    // Azure blob metadata keys are forced to lowercase so do this consistently for all stores
+    Object.keys(letter).forEach(key => {
+      if (key !== key.toLowerCase()) {
+        letter[key.toLowerCase()] = letter[key];
+        delete letter[key];
+      }
+    });
+
+    // Azure blob metadata has a top level urn but other stores don't
+    if (!letter.urn && letter.links && letter.links.self) {
+      letter.urn = letter.links.self.href;
+    }
+
     return {
       type: letter.extra.type,
       path: url.parse(letter.extra.url).pathname,
@@ -154,7 +167,7 @@ router.get('/messageRatesData', (request, response) => {
   return messageRates.getMessageRatesData(request.query.sec).then(stats => {
     request.insights.trackEvent('messageRatesDataComplete');
     return response.json(stats);
-  }).catch(error => {
+  }).catch(() => {
     return response.status(500).end();
   });
 });
