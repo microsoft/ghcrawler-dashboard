@@ -21,6 +21,8 @@ The bare minimum configuration is:
 ```
 For more options see env/env-template.json file.
 
+The variables may be set either individually as environment variables or in env.json file at the same level as the project (ghcrawler-dashboard/../env.json).
+
 ### Install Node packages
 
 ```
