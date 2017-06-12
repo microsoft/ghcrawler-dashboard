@@ -13,4 +13,4 @@ RUN mkdir -p /opt/ghcrawler-dashboard && cp -a /tmp/node_modules /opt/ghcrawler-
 WORKDIR /opt/ghcrawler-dashboard
 ADD . /opt/ghcrawler-dashboard
 
-CMD nodemon --debug ./bin/www
+CMD nodemon --inspect ./bin/www
