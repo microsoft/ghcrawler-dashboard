@@ -15,7 +15,9 @@ module.exports = function (req, res, next) {
   }
   var arr = req.headers['x-arr-ssl'];
   var expectedHeaders = [
-    '2048|256|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2|CN=*.azurewebsites.net'
+    '2048|256|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2|CN=*.azurewebsites.net',
+    '2048|128|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4|CN=*.azurewebsites.net',
+    '2048|256|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4|CN=*.azurewebsites.net'
   ];
   if (config.webServer.expectedSslCertificate) {
     expectedHeaders.push(config.webServer.expectedSslCertificate);
