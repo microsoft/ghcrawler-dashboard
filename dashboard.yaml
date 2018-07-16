@@ -1,0 +1,55 @@
+# Kubernetes configuration for the GHCrawler dashboard.
+#
+# Depends on these services:
+# - redis
+# - crawler
+#
+# Serves content on port 4000
+#
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: dashboard
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: gcr.io/clearly-defined/ghcrawler-dashboard:latest
+        ports:
+        - containerPort: 4000
+        env:
+          - name: NODE_ENV
+            value: localhost
+          - name: DEBUG_ALLOW_HTTP
+            value: "1"
+          - name: CRAWLER_REDIS_URL
+            value: redis
+          - name: CRAWLER_NAME
+            value: crawler
+          - name: CRAWLER_SERVICE_URL
+            value: http://crawler:5000
+  selector:
+    matchLabels:
+      app: dashboard
+      
+---
+
+# Expose port 4000
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  labels:
+    app: dashboard
+spec:
+  ports:
+  - port: 4000
+    targetPort: 4000
+    protocol: TCP
+  selector:
+    app: dashboard
