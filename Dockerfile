@@ -1,4 +1,10 @@
-FROM node:6
+FROM node:8
+
+LABEL maintainer="opensource@microsoft.com"\
+  vendor="Microsoft"\
+  com.microsoft.product="GHCrawler Dashboard"\
+  com.microsoft.url="https://hub.docker.com/r/microsoft/ghcrawler-dashboard"\
+  com.microsoft.vcs-url="https://github.com/Microsoft/ghcrawler-dashboard"
 
 EXPOSE 4000
 EXPOSE 5858
