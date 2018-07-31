@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+/*eslint no-console: ["error", { allow: ["error", "log"] }] */
 const Q = require('q');
 const moment = require('moment');
 const RedisMetrics = require('redis-metrics');
