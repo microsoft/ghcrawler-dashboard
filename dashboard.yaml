@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: dashboard
-        image: gcr.io/clearly-defined/ghcrawler-dashboard:latest
+        image: mcr.microsoft.com/ospo/ghcrawler-dashboard:latest
         ports:
         - containerPort: 4000
         env:
@@ -36,7 +36,7 @@ spec:
   selector:
     matchLabels:
       app: dashboard
-      
+
 ---
 
 # Expose port 4000
