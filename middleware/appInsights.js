@@ -16,9 +16,9 @@ module.exports = function initializeAppInsights(app, config) {
       .start();
     client = appInsights.defaultClient;
   } else {
-    client.trackEvent = (msg) => debug(colors.yellow(msg.name) + JSON.stringify(msg.properties));
+    client.trackEvent = (msg) => debug(colors.yellow(msg.name) + ' ' + JSON.stringify(msg.properties));
     client.trackException = (msg) => debug(colors.red(msg.exception) + JSON.stringify(msg.properties));
-    client.trackMetric = (msg) => debug(colors.blue(msg.name) + msg.value);
+    client.trackMetric = (msg) => debug(colors.blue(msg.name) + ' ' + msg.value);
     client.trackTrace = (msg) => debug(colors.green(msg.message));
   }
 

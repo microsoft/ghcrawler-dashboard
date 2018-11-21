@@ -40,7 +40,8 @@ router.init = (app, callback) => {
   const crawlerToken = config.dashboard.crawler.apiToken;
   crawlerClient = new CrawlerClient(crawlerUrl, crawlerToken);
 
-  queueInfoPoller.initialize(config);
+  const insights = app.get('providers').insights;
+  queueInfoPoller.initialize(config, insights);
   queueInfoPoller.startCollectingData();
   const redisClient = app.get('providers').redisClient;
   messageRates.initialize(config, redisClient);
