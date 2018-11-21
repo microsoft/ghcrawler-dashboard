@@ -52,23 +52,19 @@ router.get('/', (request, response) => {
 });
 
 router.get('/config', wrap(function* (request, response) {
-  request.insights.trackEvent('crawlerConfigGetStart');
   const config = yield crawlerClient.getConfiguration();
   config.crawler.url = crawlerClient.url;
   queueInfoPoller.crawlerName = config.crawler.name;
   response.json(config);
-  request.insights.trackEvent('crawlerConfigGetComplete');
 }));
 
 router.patch('/config', wrap(function* (request, response) {
-  request.insights.trackEvent('crawlerConfigPatchStart');
+  request.insights.trackTrace({ message: 'CrawlerConfigPatch' });
   yield crawlerClient.configureCrawler(request.body);
   response.json({ success: true });
-  request.insights.trackEvent('crawlerConfigPatchComplete');
 }));
 
 router.get('/deadletters', wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardListDeadlettersStart');
   let deadletters = yield crawlerClient.listDeadletters();
   deadletters = deadletters.map(letter => {
     return {
@@ -80,18 +76,14 @@ router.get('/deadletters', wrap(function* (request, response) {
     };
   });
   response.json(deadletters);
-  request.insights.trackEvent('dashboardListDeadlettersComplete');
 }));
 
 router.get('/deadletters/:urn', wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardGetDeadletterStart');
   const deadletters = yield crawlerClient.getDeadletter(request.params.urn);
   response.json(deadletters);
-  request.insights.trackEvent('dashboardGetDeadletterComplete');
 }));
 
 router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardPostDeadletterStart');
   const action = request.query.action;
   const requeueQueueName = request.query.queue || 'soon';
   const urns = request.body.urns;
@@ -112,47 +104,34 @@ router.post('/deadletters', expressJoi.joiValidate(deadlettersSchema), wrap(func
     respMessage.warnings = errors;
   }
   response.json(respMessage);
-  request.insights.trackEvent('dashboardPostDeadletterComplete');
 }));
 
 router.get('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardGetRequestsStart');
   const requests = yield crawlerClient.getRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
-  request.insights.trackEvent('dashboardGetRequestsComplete');
 }));
 
 router.delete('/requests/:queue', expressJoi.joiValidate(requestsSchema), wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardDeleteRequestsStart');
   const requests = yield crawlerClient.deleteRequests(request.params.queue, parseInt(request.query.count, 10));
   response.json(requests);
-  request.insights.trackEvent('dashboardDeleteRequestsComplete');
 }));
 
 router.post('/requests/:queue', wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardQueueRequestStart');
   yield crawlerClient.queueRequests(request.body, request.params.queue || 'normal');
   response.sendStatus(201);
-  request.insights.trackEvent('dashboardQueueRequestComplete');
 }));
 
 router.put('/queue/:name', expressJoi.joiValidate(queueSchema), wrap(function* (request, response) {
-  request.insights.trackEvent('dashboardFlushQueueStart');
   yield crawlerClient.flushQueue(request.params.name);
   response.sendStatus(200);
-  request.insights.trackEvent('dashboardFlushQueueComplete');
 }));
 
 router.get('/queuesData', (request, response) => {
-  request.insights.trackEvent('queuesDataGetStart');
   response.json(queueInfoPoller.getQueuesActiveMessageCountsData(request.query.sec));
-  request.insights.trackEvent('queuesDataGetComplete');
 });
 
 router.get('/messageRatesData', (request, response) => {
-  request.insights.trackEvent('messageRatesDataStart');
   return messageRates.getMessageRatesData(request.query.sec).then(stats => {
-    request.insights.trackEvent('messageRatesDataComplete');
     return response.json(stats);
   }).catch(() => {
     return response.status(500).end();

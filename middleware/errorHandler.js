@@ -43,9 +43,13 @@ module.exports = function (err, req, res, next) {
   if (req && req.app && req.app.settings && req.app.settings.runtimeConfig) {
     config = req.app.settings.runtimeConfig;
     if (config.logging.errors && err.status !== 403 && err.skipLog !== true) {
-      req.insights.trackException(err, {
-        url: req.scrubbedUrl || req.originalUrl || req.url,
-        statusCode: errorStatus,
+      req.insights.trackException({
+        exception: err,
+        properties: {
+          url: req.scrubbedUrl || req.originalUrl || req.url,
+          statusCode: errorStatus,
+          correlationId: req.correlationId,
+        }
       });
     }
   }

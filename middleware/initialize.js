@@ -33,7 +33,10 @@ module.exports = function init(app, express, rootdir, config, configurationError
         };
       };
       if (appInsightsClient) {
-        appInsightsClient.trackException(error, { info: 'App crashed because of an initialization error.' });
+        appInsightsClient.trackException({
+          exception: error,
+          properties: { info: 'App crashed because of an initialization error.' }
+        });
         appInsightsClient.sendPendingData(crash(error));
       } else {
         crash(error)();
@@ -65,7 +68,7 @@ module.exports = function init(app, express, rootdir, config, configurationError
   app.set('redisHelper', redisHelper);
   providers.redis = redisHelper;
   redisClient.on('connect', () => {
-    providers.insights.trackEvent('CrawlerDashboardRedisConnect');
+    providers.insights.trackTrace({ message: 'CrawlerDashboardRedisConnect' });
     if (redisFirstCallback) {
       const cb = redisFirstCallback;
       redisFirstCallback = null;
@@ -73,13 +76,13 @@ module.exports = function init(app, express, rootdir, config, configurationError
     }
   });
   redisClient.on('error', error => {
-    providers.insights.trackException(error, { name: 'CrawlerDashboardRedisError' });
+    providers.insights.trackException({ exception: error, properties: { name: 'CrawlerDashboardRedisError' } });
   });
   redisClient.on('reconnecting', properties => {
-    providers.insights.trackEvent('CrawlerDashboardRedisReconnecting', properties);
+    providers.insights.trackEvent({ name: 'CrawlerDashboardRedisReconnecting', properties });
   });
   redisClient.on('end', () => {
-    providers.insights.trackEvent('CrawlerDashboardRedisEnd');
+    providers.insights.trackTrace({ message: 'CrawlerDashboardRedisEnd' });
   });
   async.parallel([
     cb => {

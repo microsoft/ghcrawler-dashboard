@@ -85,7 +85,7 @@
         "NODE_ENV": "localhost",
         "CONFIGURATION_ENVIRONMENT": "localhost"
       },
-      "console": "internalConsole",
+      "console": "integratedTerminal",
       "sourceMaps": false,
       "outFiles": []
     },
@@ -103,7 +103,7 @@
         "CRAWLER_SERVICE_URL": "http://localhost:3000",
         "DEBUG_ALLOW_HTTP": "1"
       },
-      "console": "internalConsole"
+      "console": "integratedTerminal"
     }
   ]
 }
