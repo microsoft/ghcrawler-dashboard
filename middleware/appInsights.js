@@ -3,26 +3,29 @@
 
 'use strict';
 
-const insights = require('../lib/insights');
+const colors = require('colors');
+const debug = require('debug')('appinsights');
 
 module.exports = function initializeAppInsights(app, config) {
-  let client = undefined;
   const key = config && config.telemetry && config.telemetry.applicationInsightsKey ? config.telemetry.applicationInsightsKey : null;
+  let client = {};
   if (key) {
     const appInsights = require('applicationinsights');
-    const instance = appInsights.setup(key);
-    client = instance.getClient(key);
-    instance.start();
+    appInsights.setup(key)
+      .setAutoCollectPerformance(false)
+      .start();
+    client = appInsights.defaultClient;
+  } else {
+    client.trackEvent = (msg) => debug(colors.yellow(msg.name) + ' ' + JSON.stringify(msg.properties));
+    client.trackException = (msg) => debug(colors.red(msg.exception) + JSON.stringify(msg.properties));
+    client.trackMetric = (msg) => debug(colors.blue(msg.name) + ' ' + msg.value);
+    client.trackTrace = (msg) => debug(colors.green(msg.message));
   }
 
   app.use((req, res, next) => {
-    // Provide application insight event tracking with correlation ID
-    const extraProperties = {
-      correlationId: req.correlationId,
-    };
-    req.insights = insights(extraProperties, client);
+    req.insights = client;
     next();
   });
 
-  return insights({}, client);
+  return client;
 };

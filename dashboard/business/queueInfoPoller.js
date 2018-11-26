@@ -16,7 +16,7 @@ class QueueInfoPoller {
     this.deadletterQueueName = 'deadletter';
   }
 
-  initialize(config) {
+  initialize(config, insights) {
     this.crawlerClient = new CrawlerClient(config.dashboard.crawler.url, config.dashboard.crawler.apiToken);
     this.queueNames = config.dashboard.queuing.queueNames;
     this.queueNames.forEach(queueName => {
@@ -25,6 +25,7 @@ class QueueInfoPoller {
     this.stats.data[this.deadletterQueueName] = [];
     this.pollingFrequencySec = config.dashboard.queuing.pollingFrequencySec;
     this.maxNumberOfDataPoints = Math.floor(maxSec / this.pollingFrequencySec);
+    this.insights = insights;
   }
 
   getQueuesActiveMessageCountsData(sec = maxSec) {
@@ -59,6 +60,9 @@ class QueueInfoPoller {
         self.crawlerClient.getInfo(`${queueName}`).then(info => {
           self.infos[queueName] = info;
           self.stats.data[queueName].push(parseInt(info.count));
+          if (queueName === 'normal') {
+            this.insights.trackMetric({ name: 'NormalQueueCount', value: info.count });
+          }
         }).catch(() => {
           self.stats.data[queueName].push(0);
         }).finally(() => {
