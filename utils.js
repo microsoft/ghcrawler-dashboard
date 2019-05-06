@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const async = require('async');
-
 // ----------------------------------------------------------------------------
 // Session utility: Store the referral URL, if present, and redirect to a new
 // location.
