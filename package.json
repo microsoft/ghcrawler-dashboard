@@ -1,11 +1,11 @@
 {
   "name": "ghcrawler-dashboard",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Crawler UI Dashboard",
   "main": "./bin/www",
   "scripts": {
     "start": "node ./bin/www",
-    "test": "node_modules/grunt/bin/grunt"
+    "test": "node ./node_modules/eslint/bin/eslint.js ."
   },
   "keywords": [
     "crawler",
@@ -18,44 +18,38 @@
   },
   "dependencies": {
     "adal-node": "^0.1.28",
-    "applicationinsights": "^1.0.7",
-    "async": "^2.6.1",
-    "azure-keyvault": "^1.0.0",
+    "applicationinsights": "^1.3.1",
+    "async": "^2.6.2",
+    "azure-keyvault": "^3.0.4",
     "basic-auth": "^1.1.0",
-    "body-parser": "~1.18.3",
-    "colors": "^1.3.2",
-    "compression": "^1.7.3",
-    "connect-redis": "^3.4.0",
-    "debug": "^4.1.0",
+    "body-parser": "^1.19.0",
+    "colors": "^1.3.3",
+    "compression": "^1.7.4",
+    "connect-redis": "^3.4.1",
+    "debug": "^4.1.1",
     "express": "^4.16.4",
     "express-init": "^1.1.0",
     "express-joi": "^0.3.1",
-    "express-session": "^1.15.6",
+    "express-session": "^1.16.1",
     "express-sslify": "^1.2.0",
     "ghcrawler-cli": "0.2.0",
-    "hsts": "^2.1.0",
-    "moment": "^2.22.2",
+    "hsts": "^2.2.0",
+    "moment": "^2.24.0",
     "morgan": "^1.9.1",
-    "node-jose": "^0.9.1",
+    "node-jose": "^1.1.3",
     "node-uuid": "^1.4.8",
     "object-path": "^0.11.4",
-    "painless-config-resolver": "^0.1.2",
+    "painless-config-resolver": "^1.1.1",
     "passport": "^0.4.0",
-    "passport-azure-ad": "^3.0.12",
+    "passport-azure-ad": "^4.0.0",
     "pug": "~2.0.0-beta6",
     "q": "^1.5.1",
     "qlimit": "^0.1.1",
     "querystring": "^0.2.0",
     "redis": "^2.8.0",
-    "redis-metrics": "^0.4.1"
+    "redis-metrics": "^1.3.1"
   },
   "devDependencies": {
-    "bower": "^1.8.4",
-    "eslint": "^5.2.0",
-    "grunt": "^1.0.3",
-    "grunt-eslint": "^21.0.0",
-    "grunt-mocha-test": "^0.13.3",
-    "load-grunt-tasks": "^4.0.0",
-    "mocha": "^5.2.0"
+    "eslint": "^5.16.0"
   }
 }

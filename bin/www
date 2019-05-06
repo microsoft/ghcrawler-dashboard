@@ -3,7 +3,6 @@
 // Licensed under the MIT License.
 
 const app = require('../app');
-const debug = require('debug')('g:server');
 const debugInitialization = require('debug')('oss-initialize');
 const init = require('express-init');
 const painlessConfigResolver = require('painless-config-resolver')();
@@ -31,7 +30,7 @@ app.set('port', port);
 
 debugInitialization('initializing app & configuration');
 
-painlessConfigResolver.resolve((configurationError, config) => {
+painlessConfigResolver.resolve({ directoryName: 'config' }, (configurationError, config) => {
   app.initializeApplication(config, configurationError, (error) => {
     if (error) throw error;
 
@@ -60,16 +59,16 @@ painlessConfigResolver.resolve((configurationError, config) => {
 
       // handle specific listen errors with friendly messages
       switch (error.code) {
-        case 'EACCES':
-          console.error(bind + ' requires elevated privileges');
-          process.exit(1);
-          break;
-        case 'EADDRINUSE':
-          console.error(bind + ' is already in use');
-          process.exit(1);
-          break;
-        default:
-          throw error;
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
       }
     }
 
