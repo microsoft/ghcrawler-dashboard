@@ -14,21 +14,8 @@ module.exports = function (req, res, next) {
     return next(new Error('No "x-arr-ssl" header, yet this app has been deployed to App Service. Please have an administrator investigate.'));
   }
   var arr = req.headers['x-arr-ssl'];
-  var expectedHeaders = [
-    '2048|256|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2|CN=*.azurewebsites.net',
-    '2048|128|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4|CN=*.azurewebsites.net',
-    '2048|256|C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT TLS CA 4|CN=*.azurewebsites.net'
-  ];
-  if (config.webServer.expectedSslCertificate) {
-    expectedHeaders.push(config.webServer.expectedSslCertificate);
-  }
-  var isLegit = false;
-  for (var i = 0; i < expectedHeaders.length; i++) {
-    if (arr === expectedHeaders[i]) {
-      isLegit = true;
-    }
-  }
-  if (isLegit === false) {
+  if (arr !== config.webServer.expectedSslCertificate &&
+    !(arr.includes('C=US, S=Washington, L=Redmond, O=Microsoft Corporation') && arr.includes('CN=*.azurewebsites.net'))) {
     var err = new Error('The SSL connection may not be secured via Azure App Service. Please contact the site sponsors to investigate.');
     err.headers = req.headers;
     err.arrHeader = arr;
